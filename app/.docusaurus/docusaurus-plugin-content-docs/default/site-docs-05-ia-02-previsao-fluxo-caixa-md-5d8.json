@@ -1,0 +1,24 @@
+{
+  "id": "ia/previsao-fluxo-caixa",
+  "title": "5.2 — Previsão de Fluxo de Caixa com ML",
+  "description": "Por que Prever Fluxo de Caixa?",
+  "source": "@site/docs/05-ia/02-previsao-fluxo-caixa.md",
+  "sourceDirName": "05-ia",
+  "slug": "/ia/previsao-fluxo-caixa",
+  "permalink": "/curso/ia/previsao-fluxo-caixa",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {},
+  "sidebar": "cursoSidebar",
+  "previous": {
+    "title": "5.1 — Fundamentos de Machine Learning para Finanças",
+    "permalink": "/curso/ia/fundamentos-ml"
+  },
+  "next": {
+    "title": "5.3 — Detecção de Anomalias em Lançamentos Contábeis",
+    "permalink": "/curso/ia/deteccao-anomalias"
+  }
+}

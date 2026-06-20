@@ -1,0 +1,24 @@
+{
+  "id": "ia/classificacao-despesas",
+  "title": "5.4 — Classificação Inteligente de Despesas",
+  "description": "O Problema",
+  "source": "@site/docs/05-ia/04-classificacao-despesas.md",
+  "sourceDirName": "05-ia",
+  "slug": "/ia/classificacao-despesas",
+  "permalink": "/curso/ia/classificacao-despesas",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {},
+  "sidebar": "cursoSidebar",
+  "previous": {
+    "title": "5.3 — Detecção de Anomalias em Lançamentos Contábeis",
+    "permalink": "/curso/ia/deteccao-anomalias"
+  },
+  "next": {
+    "title": "5.5 — BigQuery ML: Modelos Preditivos em SQL",
+    "permalink": "/curso/ia/bigquery-ml"
+  }
+}

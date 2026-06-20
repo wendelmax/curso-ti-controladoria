@@ -1,0 +1,327 @@
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import Editor from '@monaco-editor/react';
+import initSqlJs from 'sql.js';
+import SchemaExplorer, { SCHEMA } from '../SchemaExplorer';
+
+const DB_URL = '/db/seed.sqlite';
+
+function formatValue(val) {
+  if (val === null || val === undefined) return 'NULL';
+  if (typeof val === 'number') {
+    if (Number.isInteger(val)) return val.toLocaleString('pt-BR');
+    return val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  return String(val);
+}
+
+export default function SqlPlayground() {
+  const editorRef = useRef(null);
+  const [db, setDb] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
+  const [results, setResults] = useState(null);
+  const [error, setError] = useState(null);
+  const [executing, setExecuting] = useState(false);
+  const [executionTime, setExecutionTime] = useState(null);
+
+  useEffect(() => {
+    async function loadDatabase() {
+      try {
+        const SQL = await initSqlJs({
+          locateFile: (file) => `/db/${file}`,
+        });
+        const resp = await fetch(DB_URL);
+        if (!resp.ok) throw new Error(`Erro ao carregar banco: ${resp.status}`);
+        const buffer = await resp.arrayBuffer();
+        const database = new SQL.Database(new Uint8Array(buffer));
+        setDb(database);
+        setLoading(false);
+      } catch (err) {
+        setLoadError(err.message);
+        setLoading(false);
+      }
+    }
+    loadDatabase();
+    return () => {
+      if (db) db.close();
+    };
+  }, []);
+
+  const handleEditorDidMount = useCallback((editor) => {
+    editorRef.current = editor;
+    editor.focus();
+
+    editor.addAction({
+      id: 'execute-query',
+      label: 'Executar Query',
+      keybindings: [2048 | 49],
+      run: () => executeQuery(),
+    });
+  }, [db]);
+
+  const executeQuery = useCallback(() => {
+    if (!db || !editorRef.current) return;
+    const sql = editorRef.current.getValue().trim();
+    if (!sql) return;
+
+    setExecuting(true);
+    setError(null);
+    setResults(null);
+    setExecutionTime(null);
+
+    try {
+      const start = performance.now();
+      const res = db.exec(sql);
+      const end = performance.now();
+      setExecutionTime(((end - start) / 1000).toFixed(3));
+      setResults(res);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setExecuting(false);
+    }
+  }, [db]);
+
+  const handleKeyDown = useCallback((e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      executeQuery();
+    }
+  }, [executeQuery]);
+
+  const clearResults = () => {
+    setResults(null);
+    setError(null);
+    setExecutionTime(null);
+  };
+
+  const getTableNames = () => SCHEMA.map((t) => t.name);
+  const getColumnNames = (tableName) => {
+    const table = SCHEMA.find((t) => t.name === tableName);
+    return table ? table.columns.map((c) => c.name) : [];
+  };
+
+  function handleEditorWillMount(monaco) {
+    const tableNames = SCHEMA.map((t) => t.name);
+    const allColumns = {};
+    SCHEMA.forEach((t) => {
+      allColumns[t.name] = t.columns.map((c) => c.name);
+    });
+
+    monaco.languages.registerCompletionItemProvider('sql', {
+      provideCompletionItems: (model, position) => {
+        const word = model.getWordUntilPosition(position);
+        const range = {
+          startLineNumber: position.lineNumber,
+          endLineNumber: position.lineNumber,
+          startColumn: word.startColumn,
+          endColumn: word.endColumn,
+        };
+
+        const suggestions = [];
+
+        tableNames.forEach((name) => {
+          suggestions.push({
+            label: name,
+            kind: monaco.languages.CompletionItemKind.Class,
+            insertText: name,
+            range,
+            detail: 'tabela',
+          });
+        });
+
+        const textBefore = model.getValueInRange({
+          startLineNumber: position.lineNumber,
+          startColumn: 1,
+          endLineNumber: position.lineNumber,
+          endColumn: position.column,
+        });
+
+        const fromMatch = textBefore.match(/\bfrom\s+(\w+)\s*/i);
+        const joinMatch = textBefore.match(/\bjoin\s+(\w+)\s*/i);
+        let activeTable = null;
+        if (fromMatch) activeTable = fromMatch[1];
+        else if (joinMatch) activeTable = joinMatch[1];
+
+        if (activeTable && allColumns[activeTable]) {
+          allColumns[activeTable].forEach((col) => {
+            suggestions.push({
+              label: col,
+              kind: monaco.languages.CompletionItemKind.Field,
+              insertText: col,
+              range,
+              detail: `coluna de ${activeTable}`,
+            });
+          });
+        }
+
+        SCHEMA.forEach((t) => {
+          t.columns.forEach((col) => {
+            suggestions.push({
+              label: `${t.name}.${col.name}`,
+              kind: monaco.languages.CompletionItemKind.Field,
+              insertText: `${t.name}.${col.name}`,
+              range,
+              detail: `${t.name}.${col.name} (${col.type})`,
+            });
+          });
+        });
+
+        const keywords = [
+          'SELECT', 'FROM', 'WHERE', 'AND', 'OR', 'NOT', 'IN', 'BETWEEN',
+          'LIKE', 'IS', 'NULL', 'AS', 'ON', 'JOIN', 'LEFT', 'RIGHT', 'INNER',
+          'OUTER', 'CROSS', 'GROUP BY', 'ORDER BY', 'HAVING', 'LIMIT',
+          'OFFSET', 'UNION', 'ALL', 'DISTINCT', 'CASE', 'WHEN', 'THEN',
+          'ELSE', 'END', 'SUM', 'AVG', 'COUNT', 'MIN', 'MAX', 'COALESCE',
+          'CAST', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'OVER', 'PARTITION BY',
+          'WITH', 'RECURSIVE', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'TABLE',
+          'ALTER', 'DROP', 'INDEX', 'VIEW', 'EXISTS', 'HAVING',
+        ];
+        keywords.forEach((kw) => {
+          suggestions.push({
+            label: kw,
+            kind: monaco.languages.CompletionItemKind.Keyword,
+            insertText: kw.toLowerCase(),
+            range,
+            detail: 'palavra-chave SQL',
+          });
+        });
+
+        return { suggestions };
+      },
+      triggerCharacters: ['.', ' ', ','],
+    });
+
+    monaco.editor.defineTheme('cursoTheme', {
+      base: 'vs',
+      inherit: true,
+      rules: [
+        { token: 'keyword', foreground: '0000FF', fontStyle: 'bold' },
+        { token: 'type', foreground: '267f99' },
+        { token: 'string', foreground: 'a31515' },
+        { token: 'comment', foreground: '008000', fontStyle: 'italic' },
+        { token: 'number', foreground: '098658' },
+      ],
+      colors: {
+        'editorLineNumber.foreground': '#999999',
+        'editorCursor.foreground': '#1a73e8',
+      },
+    });
+  }
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="spinner" />
+        <span>Carregando banco de dados...</span>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="loading-container">
+        <span style={{ color: 'var(--ifm-color-danger)' }}>
+          Erro: {loadError}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="playground-container" onKeyDown={handleKeyDown}>
+      <div className="playground-header">
+        <h2>&#128187; SQL Playground</h2>
+        <button className="btn-execute" onClick={executeQuery} disabled={executing}>
+          {executing ? 'Executando...' : '▶ Executar'}
+        </button>
+        <span style={{ fontSize: '0.8rem', color: 'var(--ifm-color-emphasis-600)' }}>
+          Ctrl+Enter para executar
+        </span>
+        <div style={{ flex: 1 }} />
+        <button className="btn-clear" onClick={clearResults}>
+          ✕ Limpar
+        </button>
+      </div>
+
+      <div className="playground-layout">
+        <SchemaExplorer />
+
+        <div className="playground-editor-panel">
+          <div className="playground-editor-header">
+            <span>&#128221; Editor SQL</span>
+            {executionTime && (
+              <span style={{ fontWeight: 400, fontSize: '0.8rem' }}>
+                {executionTime}s
+              </span>
+            )}
+          </div>
+          <div className="playground-editor-wrapper">
+            <Editor
+              height="100%"
+              defaultLanguage="sql"
+              defaultValue={`-- Digite sua query aqui\nSELECT * FROM empresas LIMIT 10;`}
+              theme="cursoTheme"
+              beforeMount={handleEditorWillMount}
+              onMount={handleEditorDidMount}
+              options={{
+                fontSize: 14,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                lineNumbers: 'on',
+                renderLineHighlight: 'line',
+                automaticLayout: true,
+                suggestOnTriggerCharacters: true,
+                wordBasedSuggestions: false,
+                tabSize: 2,
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="playground-results-panel">
+          <div className="playground-results-header">
+            <span>&#128200; Resultados</span>
+            {results && results.length > 0 && (
+              <span style={{ fontWeight: 400, fontSize: '0.8rem' }}>
+                {results[0].values.length} linha(s)
+              </span>
+            )}
+            {error && <span style={{ color: 'var(--ifm-color-danger)' }}>Erro</span>}
+          </div>
+          <div className="playground-results-content">
+            {error && <div className="playground-error">{error}</div>}
+            {!error && results && results.length > 0 && (
+              <table>
+                <thead>
+                  <tr>
+                    {results[0].columns.map((col, i) => (
+                      <th key={i}>{col}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {results[0].values.map((row, i) => (
+                    <tr key={i}>
+                      {row.map((val, j) => (
+                        <td key={j}>{formatValue(val)}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+            {!error && (!results || results.length === 0) && (
+              <div className="playground-empty">
+                Execute uma query para ver os resultados aqui.
+                <br />
+                <small>
+                  Exemplo: <code>SELECT * FROM empresas LIMIT 5;</code>
+                </small>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

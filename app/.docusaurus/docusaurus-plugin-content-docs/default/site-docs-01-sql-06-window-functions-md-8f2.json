@@ -1,0 +1,24 @@
+{
+  "id": "sql/window-functions",
+  "title": "1.6 — Window Functions (Funções Janela)",
+  "description": "Window functions realizam cálculos através de um conjunto de linhas relacionadas sem agrupar os resultados.",
+  "source": "@site/docs/01-sql/06-window-functions.md",
+  "sourceDirName": "01-sql",
+  "slug": "/sql/window-functions",
+  "permalink": "/curso/sql/window-functions",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 6,
+  "frontMatter": {},
+  "sidebar": "cursoSidebar",
+  "previous": {
+    "title": "1.5 — Subqueries e CTEs",
+    "permalink": "/curso/sql/subqueries-ctes"
+  },
+  "next": {
+    "title": "1.7 — Casos Financeiros Práticos",
+    "permalink": "/curso/sql/cases-financeiros"
+  }
+}

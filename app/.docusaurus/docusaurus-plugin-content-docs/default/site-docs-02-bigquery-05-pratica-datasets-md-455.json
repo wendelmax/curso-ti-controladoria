@@ -1,0 +1,24 @@
+{
+  "id": "bigquery/pratica-datasets",
+  "title": "Prática com Datasets Públicos do BigQuery",
+  "description": "Acessando bigquery-public-data",
+  "source": "@site/docs/02-bigquery/05-pratica-datasets.md",
+  "sourceDirName": "02-bigquery",
+  "slug": "/bigquery/pratica-datasets",
+  "permalink": "/curso/bigquery/pratica-datasets",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 5,
+  "frontMatter": {},
+  "sidebar": "cursoSidebar",
+  "previous": {
+    "title": "Otimização de Consultas no BigQuery",
+    "permalink": "/curso/bigquery/otimizacao"
+  },
+  "next": {
+    "title": "Introdução ao Looker para Controladoria",
+    "permalink": "/curso/looker/intro-looker"
+  }
+}

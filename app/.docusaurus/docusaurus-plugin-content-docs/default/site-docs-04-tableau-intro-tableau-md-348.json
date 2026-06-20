@@ -1,0 +1,23 @@
+{
+  "id": "tableau/intro-tableau",
+  "title": "Introdução ao Tableau para Controladoria",
+  "description": "O que é o Tableau?",
+  "source": "@site/docs/04-tableau/intro-tableau.md",
+  "sourceDirName": "04-tableau",
+  "slug": "/tableau/intro-tableau",
+  "permalink": "/curso/tableau/intro-tableau",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "cursoSidebar",
+  "previous": {
+    "title": "Integração Looker + BigQuery",
+    "permalink": "/curso/looker/integracao-bigquery"
+  },
+  "next": {
+    "title": "Fundamentos do Tableau",
+    "permalink": "/curso/tableau/fundamentos"
+  }
+}

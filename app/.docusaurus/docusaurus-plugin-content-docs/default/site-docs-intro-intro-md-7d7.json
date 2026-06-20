@@ -1,0 +1,19 @@
+{
+  "id": "intro/intro",
+  "title": "Curso de TI para Controladoria",
+  "description": "Bem-vindo ao curso que vai transformar sua expertise em controladoria, fiscal e contabilidade em superpoderes com tecnologia de dados.",
+  "source": "@site/docs/intro/intro.md",
+  "sourceDirName": "intro",
+  "slug": "/intro/",
+  "permalink": "/curso/intro/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "cursoSidebar",
+  "next": {
+    "title": "Módulo 1: SQL para Análise Financeira",
+    "permalink": "/curso/sql/intro-sql"
+  }
+}

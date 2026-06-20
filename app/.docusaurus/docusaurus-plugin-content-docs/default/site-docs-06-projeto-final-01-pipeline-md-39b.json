@@ -1,0 +1,24 @@
+{
+  "id": "projeto-final/pipeline",
+  "title": "6.1 — Pipeline de Dados",
+  "description": "Objetivo",
+  "source": "@site/docs/06-projeto-final/01-pipeline.md",
+  "sourceDirName": "06-projeto-final",
+  "slug": "/projeto-final/pipeline",
+  "permalink": "/curso/projeto-final/pipeline",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {},
+  "sidebar": "cursoSidebar",
+  "previous": {
+    "title": "Módulo 6: Projeto Final Integrador",
+    "permalink": "/curso/projeto-final/intro-projeto"
+  },
+  "next": {
+    "title": "6.2 — Análise de Vendas",
+    "permalink": "/curso/projeto-final/analise-vendas"
+  }
+}

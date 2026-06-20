@@ -1,0 +1,24 @@
+{
+  "id": "bigquery/funcoes-analiticas",
+  "title": "Funções Analíticas Avançadas no BigQuery",
+  "description": "WINDOW Functions",
+  "source": "@site/docs/02-bigquery/03-funcoes-analiticas.md",
+  "sourceDirName": "02-bigquery",
+  "slug": "/bigquery/funcoes-analiticas",
+  "permalink": "/curso/bigquery/funcoes-analiticas",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {},
+  "sidebar": "cursoSidebar",
+  "previous": {
+    "title": "Particionamento e Clustering no BigQuery",
+    "permalink": "/curso/bigquery/particionamento"
+  },
+  "next": {
+    "title": "Otimização de Consultas no BigQuery",
+    "permalink": "/curso/bigquery/otimizacao"
+  }
+}

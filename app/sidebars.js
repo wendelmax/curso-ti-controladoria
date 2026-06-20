@@ -1,0 +1,84 @@
+module.exports = {
+  cursoSidebar: [
+    {
+      type: 'category',
+      label: 'Introdução',
+        items: ['intro/intro'],
+    },
+    {
+      type: 'category',
+      label: 'Módulo 1 — SQL para Análise Financeira',
+      items: [
+        'sql/intro-sql',
+        'sql/fundamentos',
+        'sql/filtros',
+        'sql/agregacoes',
+        'sql/joins',
+        'sql/subqueries-ctes',
+        'sql/window-functions',
+        'sql/cases-financeiros',
+        'sql/exercicios',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Módulo 2 — Google BigQuery',
+      items: [
+        'bigquery/intro-bigquery',
+        'bigquery/diferencas-sql',
+        'bigquery/particionamento',
+        'bigquery/funcoes-analiticas',
+        'bigquery/otimizacao',
+        'bigquery/pratica-datasets',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Módulo 3 — Looker',
+      items: [
+        'looker/intro-looker',
+        'looker/lookml',
+        'looker/dimensoes-medidas',
+        'looker/dashboards',
+        'looker/integracao-bigquery',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Módulo 4 — Tableau',
+      items: [
+        'tableau/intro-tableau',
+        'tableau/fundamentos',
+        'tableau/visualizacoes-financeiras',
+        'tableau/calculos-lod',
+        'tableau/dashboards',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Módulo 5 — IA Aplicada à Análise Financeira',
+      items: [
+        'ia/intro-ia',
+        'ia/fundamentos-ml',
+        'ia/previsao-fluxo-caixa',
+        'ia/deteccao-anomalias',
+        'ia/classificacao-despesas',
+        'ia/bigquery-ml',
+        'ia/ferramentas-ia',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Módulo 6 — Projeto Final',
+      items: [
+        'projeto-final/intro-projeto',
+        'projeto-final/pipeline',
+        'projeto-final/analise-vendas',
+        'projeto-final/dre-automatizado',
+        'projeto-final/previsao-financeira',
+        'projeto-final/dashboard-executivo',
+        'projeto-final/apresentacao',
+      ],
+    },
+  ],
+};

@@ -1,0 +1,228 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/curso/",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/curso/",
+          "mainDocId": "intro/intro",
+          "docs": [
+            {
+              "id": "bigquery/diferencas-sql",
+              "path": "/curso/bigquery/diferencas-sql",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "bigquery/funcoes-analiticas",
+              "path": "/curso/bigquery/funcoes-analiticas",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "bigquery/intro-bigquery",
+              "path": "/curso/bigquery/intro-bigquery",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "bigquery/otimizacao",
+              "path": "/curso/bigquery/otimizacao",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "bigquery/particionamento",
+              "path": "/curso/bigquery/particionamento",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "bigquery/pratica-datasets",
+              "path": "/curso/bigquery/pratica-datasets",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "ia/bigquery-ml",
+              "path": "/curso/ia/bigquery-ml",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "ia/classificacao-despesas",
+              "path": "/curso/ia/classificacao-despesas",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "ia/deteccao-anomalias",
+              "path": "/curso/ia/deteccao-anomalias",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "ia/ferramentas-ia",
+              "path": "/curso/ia/ferramentas-ia",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "ia/fundamentos-ml",
+              "path": "/curso/ia/fundamentos-ml",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "ia/intro-ia",
+              "path": "/curso/ia/intro-ia",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "ia/previsao-fluxo-caixa",
+              "path": "/curso/ia/previsao-fluxo-caixa",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "intro/intro",
+              "path": "/curso/intro/",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "looker/dashboards",
+              "path": "/curso/looker/dashboards",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "looker/dimensoes-medidas",
+              "path": "/curso/looker/dimensoes-medidas",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "looker/integracao-bigquery",
+              "path": "/curso/looker/integracao-bigquery",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "looker/intro-looker",
+              "path": "/curso/looker/intro-looker",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "looker/lookml",
+              "path": "/curso/looker/lookml",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "projeto-final/analise-vendas",
+              "path": "/curso/projeto-final/analise-vendas",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "projeto-final/apresentacao",
+              "path": "/curso/projeto-final/apresentacao",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "projeto-final/dashboard-executivo",
+              "path": "/curso/projeto-final/dashboard-executivo",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "projeto-final/dre-automatizado",
+              "path": "/curso/projeto-final/dre-automatizado",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "projeto-final/intro-projeto",
+              "path": "/curso/projeto-final/intro-projeto",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "projeto-final/pipeline",
+              "path": "/curso/projeto-final/pipeline",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "projeto-final/previsao-financeira",
+              "path": "/curso/projeto-final/previsao-financeira",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "sql/agregacoes",
+              "path": "/curso/sql/agregacoes",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "sql/cases-financeiros",
+              "path": "/curso/sql/cases-financeiros",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "sql/exercicios",
+              "path": "/curso/sql/exercicios",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "sql/filtros",
+              "path": "/curso/sql/filtros",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "sql/fundamentos",
+              "path": "/curso/sql/fundamentos",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "sql/intro-sql",
+              "path": "/curso/sql/intro-sql",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "sql/joins",
+              "path": "/curso/sql/joins",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "sql/subqueries-ctes",
+              "path": "/curso/sql/subqueries-ctes",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "sql/window-functions",
+              "path": "/curso/sql/window-functions",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "tableau/calculos-lod",
+              "path": "/curso/tableau/calculos-lod",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "tableau/dashboards",
+              "path": "/curso/tableau/dashboards",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "tableau/fundamentos",
+              "path": "/curso/tableau/fundamentos",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "tableau/intro-tableau",
+              "path": "/curso/tableau/intro-tableau",
+              "sidebar": "cursoSidebar"
+            },
+            {
+              "id": "tableau/visualizacoes-financeiras",
+              "path": "/curso/tableau/visualizacoes-financeiras",
+              "sidebar": "cursoSidebar"
+            }
+          ],
+          "draftIds": [],
+          "sidebars": {
+            "cursoSidebar": {
+              "link": {
+                "path": "/curso/intro/",
+                "label": "intro/intro"
+              }
+            }
+          }
+        }
+      ],
+      "breadcrumbs": true
+    }
+  }
+}

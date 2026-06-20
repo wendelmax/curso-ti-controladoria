@@ -1,0 +1,24 @@
+{
+  "id": "tableau/dashboards",
+  "title": "Dashboards Executivos no Tableau",
+  "description": "Conceitos Fundamentais de Dashboards",
+  "source": "@site/docs/04-tableau/04-dashboards.md",
+  "sourceDirName": "04-tableau",
+  "slug": "/tableau/dashboards",
+  "permalink": "/curso/tableau/dashboards",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {},
+  "sidebar": "cursoSidebar",
+  "previous": {
+    "title": "Cálculos e LOD Expressions",
+    "permalink": "/curso/tableau/calculos-lod"
+  },
+  "next": {
+    "title": "Módulo 5: IA Aplicada à Análise Financeira",
+    "permalink": "/curso/ia/intro-ia"
+  }
+}

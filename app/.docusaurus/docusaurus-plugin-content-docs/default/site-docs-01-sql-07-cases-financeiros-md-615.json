@@ -1,0 +1,24 @@
+{
+  "id": "sql/cases-financeiros",
+  "title": "1.7 — Casos Financeiros Práticos",
+  "description": "Case studies reais que você vai enfrentar no dia-a-dia da controladoria.",
+  "source": "@site/docs/01-sql/07-cases-financeiros.md",
+  "sourceDirName": "01-sql",
+  "slug": "/sql/cases-financeiros",
+  "permalink": "/curso/sql/cases-financeiros",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 7,
+  "frontMatter": {},
+  "sidebar": "cursoSidebar",
+  "previous": {
+    "title": "1.6 — Window Functions (Funções Janela)",
+    "permalink": "/curso/sql/window-functions"
+  },
+  "next": {
+    "title": "1.8 — Exercícios de SQL",
+    "permalink": "/curso/sql/exercicios"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "id": "sql/filtros",
+  "title": "1.2 — Filtrando Dados com WHERE",
+  "description": "WHERE — A cláusula essencial",
+  "source": "@site/docs/01-sql/02-filtros.md",
+  "sourceDirName": "01-sql",
+  "slug": "/sql/filtros",
+  "permalink": "/curso/sql/filtros",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {},
+  "sidebar": "cursoSidebar",
+  "previous": {
+    "title": "1.1 — Fundamentos do SQL",
+    "permalink": "/curso/sql/fundamentos"
+  },
+  "next": {
+    "title": "1.3 — Agregações e Agrupamentos",
+    "permalink": "/curso/sql/agregacoes"
+  }
+}

@@ -30,6 +30,7 @@ module.exports = {
         'bigquery/funcoes-analiticas',
         'bigquery/otimizacao',
         'bigquery/pratica-datasets',
+        'bigquery/exercicios',
       ],
     },
     {
@@ -41,6 +42,7 @@ module.exports = {
         'looker/dimensoes-medidas',
         'looker/dashboards',
         'looker/integracao-bigquery',
+        'looker/exercicios',
       ],
     },
     {
@@ -52,6 +54,7 @@ module.exports = {
         'tableau/visualizacoes-financeiras',
         'tableau/calculos-lod',
         'tableau/dashboards',
+        'tableau/exercicios',
       ],
     },
     {
@@ -65,6 +68,7 @@ module.exports = {
         'ia/classificacao-despesas',
         'ia/bigquery-ml',
         'ia/ferramentas-ia',
+        'ia/exercicios',
       ],
     },
     {
@@ -78,6 +82,7 @@ module.exports = {
         'projeto-final/previsao-financeira',
         'projeto-final/dashboard-executivo',
         'projeto-final/apresentacao',
+        'projeto-final/exercicios',
       ],
     },
   ],

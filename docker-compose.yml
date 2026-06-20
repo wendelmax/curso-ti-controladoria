@@ -1,0 +1,14 @@
+services:
+  curso:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app/docs:/app/docs
+      - ./app/src:/app/src
+      - ./app/static:/app/static
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped

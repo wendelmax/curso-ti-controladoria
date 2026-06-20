@@ -14,6 +14,7 @@ module.exports = {
     defaultLocale: 'pt-BR',
     locales: ['pt-BR'],
   },
+  plugins: ['@docusaurus/plugin-vercel-analytics'],
   presets: [
     [
       'classic',

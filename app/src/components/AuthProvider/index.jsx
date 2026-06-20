@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { getSupabase } from '../../lib/supabase';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import { createSupabaseClient, getSupabaseClient } from '../../lib/supabase';
 
 const AuthContext = createContext({ user: null, session: null, loading: true, supabase: null });
 
@@ -8,18 +9,22 @@ export function useAuth() {
 }
 
 export default function AuthProvider({ children }) {
+  const { siteConfig } = useDocusaurusContext();
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [supabase, setSupabase] = useState(null);
 
   useEffect(() => {
-    const sb = getSupabase();
+    const url = siteConfig.customFields?.supabaseUrl;
+    const anonKey = siteConfig.customFields?.supabaseAnonKey;
+    const sb = createSupabaseClient(url, anonKey);
+    setSupabase(sb);
+
     if (!sb) {
       setLoading(false);
       return;
     }
-    setSupabase(sb);
 
     sb.auth.getSession().then(({ data: { session: s } }) => {
       setSession(s);
@@ -34,7 +39,7 @@ export default function AuthProvider({ children }) {
     });
 
     return () => subscription?.unsubscribe();
-  }, []);
+  }, [siteConfig.customFields?.supabaseUrl, siteConfig.customFields?.supabaseAnonKey]);
 
   return (
     <AuthContext.Provider value={{ user, session, loading, supabase }}>

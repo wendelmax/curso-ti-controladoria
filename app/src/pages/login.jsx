@@ -1,23 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Layout from '@theme/Layout';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { getSupabase } from '../lib/supabase';
 import { useAuth } from '../components/AuthProvider';
 
 function LoginForm() {
   const { user, loading, supabase } = useAuth();
-  const [supabaseUrl, setSupabaseUrl] = useState(null);
-
-  useEffect(() => {
-    if (!supabase) {
-      const sb = getSupabase();
-      setSupabaseUrl(sb ? 'configured' : null);
-    }
-  }, [supabase]);
+  const [showConfig, setShowConfig] = useState(false);
 
   if (loading) {
     return <div style={{ textAlign: 'center', padding: '3rem' }}>Carregando...</div>;
+  }
+
+  if (!supabase) {
+    return (
+      <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--ifm-color-emphasis-500)' }}>
+        <h2>Supabase não configurado</h2>
+        <p>Para ativar login, configure as variáveis SUPABASE_URL e SUPABASE_ANON_KEY no Vercel e faça redeploy.</p>
+      </div>
+    );
   }
 
   if (user) {
@@ -32,21 +33,12 @@ function LoginForm() {
             Ver Notas e Certificado
           </a>
           <button
-            onClick={() => supabase?.auth.signOut()}
+            onClick={() => supabase.auth.signOut()}
             className="button button--secondary button--lg"
           >
             Sair
           </button>
         </div>
-      </div>
-    );
-  }
-
-  if (!supabase) {
-    return (
-      <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--ifm-color-emphasis-500)' }}>
-        <h2>Supabase não configurado</h2>
-        <p>Para ativar login, crie um projeto em supabase.com e configure as variáveis de ambiente SUPABASE_URL e SUPABASE_ANON_KEY.</p>
       </div>
     );
   }

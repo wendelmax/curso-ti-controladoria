@@ -14,6 +14,10 @@ module.exports = {
     defaultLocale: 'pt-BR',
     locales: ['pt-BR'],
   },
+  customFields: {
+    supabaseUrl: process.env.SUPABASE_URL || '',
+    supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '',
+  },
   plugins: ['@docusaurus/plugin-vercel-analytics'],
   presets: [
     [
@@ -39,6 +43,7 @@ module.exports = {
         { to: '/curso/intro/', label: 'Curso', position: 'left' },
         { to: '/playground', label: 'SQL Playground', position: 'left' },
         { to: '/notas', label: 'Notas', position: 'left' },
+        { to: '/login', label: 'Entrar', position: 'right' },
         {
           href: 'https://github.com/wendelmax/curso-ti-controladoria',
           label: 'GitHub',

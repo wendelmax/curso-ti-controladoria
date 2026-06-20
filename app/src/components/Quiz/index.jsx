@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../AuthProvider';
 
 const STORAGE_KEY = 'curso_ti_quiz_results';
 
-function loadResults() {
+function loadLocal() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
   } catch {
@@ -10,27 +11,51 @@ function loadResults() {
   }
 }
 
-function saveResults(results) {
+function saveLocal(results) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
 }
 
 export default function Quiz({ moduleId, title, questions }) {
+  const { user, supabase } = useAuth();
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
-  const [results, setResults] = useState(loadResults());
+  const [results, setResults] = useState(loadLocal());
+  const [saving, setSaving] = useState(false);
 
   const isPassed = results[moduleId]?.passed;
 
   useEffect(() => {
-    setResults(loadResults());
-  }, []);
+    const local = loadLocal();
+    if (user && supabase) {
+      supabase
+        .from('quiz_results')
+        .select('*')
+        .eq('module_id', moduleId)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data && !local[moduleId]) {
+            local[moduleId] = {
+              score: data.score,
+              correct: data.correct,
+              total: data.total,
+              passed: data.passed,
+              date: data.date,
+            };
+            saveLocal(local);
+            setResults({ ...local });
+          }
+        })
+        .catch(() => {});
+    }
+    setResults(local);
+  }, [moduleId, user, supabase]);
 
   const handleAnswer = (qIndex, value) => {
     if (submitted) return;
     setAnswers(prev => ({ ...prev, [qIndex]: value }));
   };
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     let correct = 0;
     questions.forEach((q, i) => {
       if (answers[i] === q.correct) correct++;
@@ -39,14 +64,26 @@ export default function Quiz({ moduleId, title, questions }) {
     const pct = Math.round((correct / total) * 100);
     const passed = pct >= 70;
 
-    const newResults = {
-      ...loadResults(),
-      [moduleId]: { score: pct, correct, total, passed, date: new Date().toISOString() },
-    };
-    saveResults(newResults);
+    const entry = { score: pct, correct, total, passed, date: new Date().toISOString() };
+    const newResults = { ...loadLocal(), [moduleId]: entry };
+    saveLocal(newResults);
     setResults(newResults);
     setSubmitted(true);
-  }, [answers, questions, moduleId]);
+
+    if (user && supabase) {
+      setSaving(true);
+      await supabase.from('quiz_results').upsert({
+        user_id: user.id,
+        module_id: moduleId,
+        score: pct,
+        correct,
+        total,
+        passed,
+        date: entry.date,
+      }, { onConflict: 'user_id,module_id' });
+      setSaving(false);
+    }
+  }, [answers, questions, moduleId, user, supabase]);
 
   const handleReset = () => {
     setAnswers({});
@@ -68,6 +105,7 @@ export default function Quiz({ moduleId, title, questions }) {
       <h3>&#128220; Quiz: {title}</h3>
       <p style={{ color: 'var(--ifm-color-emphasis-600)', fontSize: '0.9rem' }}>
         {questions.length} perguntas | Mínimo 70% para aprovação
+        {user && <span style={{ marginLeft: '0.5rem', color: 'var(--ifm-color-success)' }}>&#10003; salvando online</span>}
       </p>
 
       {isPassed && (
@@ -124,7 +162,7 @@ export default function Quiz({ moduleId, title, questions }) {
       })}
 
       <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-        <button onClick={handleSubmit} disabled={!selectedAll || submitted}
+        <button onClick={handleSubmit} disabled={!selectedAll || submitted || saving}
           style={{
             padding: '0.6rem 1.5rem', border: 'none', borderRadius: '8px',
             background: selectedAll && !submitted ? 'var(--ifm-color-primary)' : 'var(--ifm-color-emphasis-200)',
@@ -132,7 +170,7 @@ export default function Quiz({ moduleId, title, questions }) {
             cursor: selectedAll && !submitted ? 'pointer' : 'not-allowed',
             fontWeight: 600, fontSize: '0.95rem',
           }}>
-          {submitted ? 'Nota registrada!' : 'Corrigir Quiz'}
+          {saving ? 'Salvando...' : submitted ? 'Nota registrada!' : 'Corrigir Quiz'}
         </button>
         {!selectedAll && !submitted && (
           <span style={{ color: 'var(--ifm-color-emphasis-500)', fontSize: '0.85rem', alignSelf: 'center' }}>

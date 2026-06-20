@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import Editor from '@monaco-editor/react';
+import { useAuth } from '../AuthProvider';
 
 const DB_URL = '/db/seed.sqlite';
 let cachedDb = null;
@@ -41,14 +42,14 @@ function resultsMatch(actual, expected) {
 
 const EXERCISE_STORAGE = 'curso_ti_exercise_results';
 
-function loadExerciseResults() {
+function loadLocal() {
   try {
     return JSON.parse(localStorage.getItem(EXERCISE_STORAGE) || '{}');
   } catch { return {}; }
 }
 
-function saveExerciseResult(id, data) {
-  const all = loadExerciseResults();
+function saveLocal(id, data) {
+  const all = loadLocal();
   all[id] = data;
   localStorage.setItem(EXERCISE_STORAGE, JSON.stringify(all));
 }
@@ -61,14 +62,16 @@ export default function SqlExercicio({
   validation = 'result',
   table,
 }) {
+  const { user, supabase } = useAuth();
   const editorRef = useRef(null);
   const sqlJsRef = useRef(null);
-  const [status, setStatus] = useState(null); // null | 'running' | 'correct' | 'wrong' | 'error'
+  const [status, setStatus] = useState(null);
   const [message, setMessage] = useState('');
   const [showHint, setShowHint] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [saved, setSaved] = useState(null);
   const [initError, setInitError] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     import('sql.js').then(async (mod) => {
@@ -82,15 +85,36 @@ export default function SqlExercicio({
       }
     });
 
-    const prev = loadExerciseResults();
-    if (id && prev[id]) setSaved(prev[id]);
+    const local = loadLocal();
+    if (id && local[id]) setSaved(local[id]);
   }, [id]);
+
+  useEffect(() => {
+    if (user && supabase && id) {
+      supabase
+        .from('exercise_results')
+        .select('*')
+        .eq('exercise_id', id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data) {
+            const local = loadLocal();
+            if (!local[id]) {
+              local[id] = { done: true, date: data.date };
+              saveLocal(id, local[id]);
+              setSaved(local[id]);
+            }
+          }
+        })
+        .catch(() => {});
+    }
+  }, [user, supabase, id]);
 
   const handleEditorDidMount = useCallback((editor) => {
     editorRef.current = editor;
   }, []);
 
-  const checkAnswer = useCallback(() => {
+  const checkAnswer = useCallback(async () => {
     if (!editorRef.current || !sqlJsRef.current) return;
     const sql = editorRef.current.getValue().trim();
     if (!sql) { setMessage('Digite uma query primeiro.'); return; }
@@ -102,44 +126,48 @@ export default function SqlExercicio({
     try {
       const { db } = sqlJsRef.current;
       const studentResult = db.exec(sql);
+      let isCorrect = false;
 
       if (validation === 'exact') {
         const normalizedStudent = normalizeSql(sql);
         const normalizedExpected = normalizeSql(expectedSql);
-        if (normalizedStudent === normalizedExpected) {
-          setStatus('correct');
-          setMessage('Resposta correta!');
-          setFeedback(studentResult);
-        } else {
-          setStatus('wrong');
-          setMessage('A query não coincide com a resposta esperada.');
-          setFeedback(null);
-        }
+        isCorrect = normalizedStudent === normalizedExpected;
       } else {
         const expectedResult = db.exec(expectedSql);
         const studentRows = studentResult.length > 0 ? studentResult[0].values : [];
         const expectedRows = expectedResult.length > 0 ? expectedResult[0].values : [];
-
-        if (resultsMatch(studentRows, expectedRows)) {
-          setStatus('correct');
-          setMessage('Resposta correta!');
-          setFeedback(studentResult);
-        } else {
-          setStatus('wrong');
-          setMessage('O resultado não corresponde ao esperado.');
-          setFeedback(null);
-        }
+        isCorrect = resultsMatch(studentRows, expectedRows);
       }
 
-      if (id && status === 'correct') {
-        saveExerciseResult(id, { done: true, date: new Date().toISOString() });
-        setSaved({ done: true });
+      if (isCorrect) {
+        setStatus('correct');
+        setMessage('Resposta correta!');
+        setFeedback(studentResult);
+
+        const entry = { done: true, date: new Date().toISOString() };
+        saveLocal(id, entry);
+        setSaved(entry);
+
+        if (user && supabase) {
+          setSaving(true);
+          await supabase.from('exercise_results').upsert({
+            user_id: user.id,
+            exercise_id: id,
+            done: true,
+            date: entry.date,
+          }, { onConflict: 'user_id,exercise_id' });
+          setSaving(false);
+        }
+      } else {
+        setStatus('wrong');
+        setMessage('O resultado não corresponde ao esperado.');
+        setFeedback(null);
       }
     } catch (err) {
       setStatus('error');
       setMessage(err.message);
     }
-  }, [expectedSql, validation, id, status]);
+  }, [expectedSql, validation, id, user, supabase]);
 
   const resetExercise = () => {
     if (editorRef.current) {
@@ -236,7 +264,7 @@ export default function SqlExercicio({
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginTop: '0.75rem' }}>
-          <button onClick={checkAnswer} disabled={status === 'running' || initError}
+          <button onClick={checkAnswer} disabled={status === 'running' || initError || saving}
             style={{
               padding: '0.5rem 1.25rem', border: 'none', borderRadius: '6px',
               background: status !== 'running' ? 'var(--ifm-color-primary)' : 'var(--ifm-color-emphasis-200)',
@@ -244,7 +272,7 @@ export default function SqlExercicio({
               cursor: status !== 'running' ? 'pointer' : 'not-allowed',
               fontWeight: 600, fontSize: '0.9rem',
             }}>
-            {status === 'running' ? 'Verificando...' : 'Verificar Resposta'}
+            {status === 'running' ? 'Verificando...' : saving ? 'Salvando...' : 'Verificar Resposta'}
           </button>
         </div>
 

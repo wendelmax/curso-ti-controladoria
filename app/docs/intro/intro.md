@@ -1,3 +1,7 @@
+---
+slug: /intro
+---
+
 # Curso de TI para Controladoria
 
 Bem-vindo ao curso que vai transformar sua expertise em **controladoria, fiscal e contabilidade** em superpoderes com **tecnologia de dados**.

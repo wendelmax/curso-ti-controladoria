@@ -6,7 +6,7 @@ module.exports = {
   title: 'Curso TI para Controladoria',
   tagline: 'SQL, BigQuery, Looker, Tableau & IA para Análise Financeira',
   favicon: 'img/favicon.svg',
-  url: 'https://curso-ti-controladoria.example.com',
+  url: 'https://curso-ti-controladoria.vercel.app',
   baseUrl: '/',
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
@@ -36,11 +36,11 @@ module.exports = {
     navbar: {
       title: 'TI para Controladoria',
       items: [
-        { to: '/curso/intro/intro', label: 'Curso', position: 'left' },
+        { to: '/curso/intro/', label: 'Curso', position: 'left' },
         { to: '/playground', label: 'SQL Playground', position: 'left' },
         { to: '/notas', label: 'Notas', position: 'left' },
         {
-          href: 'https://github.com/your-org/curso-ti-controladoria',
+          href: 'https://github.com/wendelmax/curso-ti-controladoria',
           label: 'GitHub',
           position: 'right',
         },
@@ -52,12 +52,12 @@ module.exports = {
         {
           title: 'Módulos',
           items: [
-            { label: 'SQL para Análise Financeira', to: '/curso/01-sql/intro-sql' },
-            { label: 'Google BigQuery', to: '/curso/02-bigquery/intro-bigquery' },
-            { label: 'Looker', to: '/curso/03-looker/intro-looker' },
-            { label: 'Tableau', to: '/curso/04-tableau/intro-tableau' },
-            { label: 'IA Aplicada', to: '/curso/05-ia/intro-ia' },
-            { label: 'Projeto Final', to: '/curso/06-projeto-final/intro-projeto' },
+            { label: 'SQL para Análise Financeira', to: '/curso/sql/intro-sql' },
+            { label: 'Google BigQuery', to: '/curso/bigquery/intro-bigquery' },
+            { label: 'Looker', to: '/curso/looker/intro-looker' },
+            { label: 'Tableau', to: '/curso/tableau/intro-tableau' },
+            { label: 'IA Aplicada', to: '/curso/ia/intro-ia' },
+            { label: 'Projeto Final', to: '/curso/projeto-final/intro-projeto' },
           ],
         },
       ],

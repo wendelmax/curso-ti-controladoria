@@ -20,7 +20,7 @@ export default function Home() {
           SQL, BigQuery, Looker, Tableau &amp; IA Aplicada à Análise Financeira e Operacional
         </p>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <Link to="/curso/intro/intro"
+          <Link to="/curso/intro/"
             style={{
               padding: '0.8rem 2rem', background: 'var(--ifm-color-primary)', color: 'white',
               borderRadius: '8px', fontWeight: 600, textDecoration: 'none',

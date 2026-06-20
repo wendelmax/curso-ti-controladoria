@@ -1,5 +1,6 @@
 node_modules/
 build/
+.docusaurus/
 package-lock.json
 static/db/seed.sqlite
 .git/

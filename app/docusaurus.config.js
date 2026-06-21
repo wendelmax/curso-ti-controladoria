@@ -18,6 +18,7 @@ module.exports = {
     supabaseUrl: process.env.SUPABASE_URL || '',
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '',
   },
+  themes: ['@docusaurus/theme-mermaid'],
   plugins: ['@docusaurus/plugin-vercel-analytics'],
   presets: [
     [
@@ -67,6 +68,9 @@ module.exports = {
         },
       ],
       copyright: `Curso TI para Controladoria © ${new Date().getFullYear()}`,
+    },
+    mermaid: {
+      theme: { light: 'neutral', dark: 'dark' },
     },
     prism: {
       theme: lightCodeTheme,

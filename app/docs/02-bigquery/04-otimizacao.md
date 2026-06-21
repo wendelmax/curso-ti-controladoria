@@ -197,14 +197,18 @@ Sempre use **Preview** (visualização de amostra) em vez de `SELECT * LIMIT n`:
 - **Preview:** gratuito, amostra de ~10 MB
 - `SELECT * LIMIT 1000`: pode processar a tabela inteira antes de aplicar o LIMIT
 
-```text
-╔══════════════╦══════════════╦══════════════════╗
-║   Ação       ║  Custo       ║  Uso             ║
-╠══════════════╬══════════════╬══════════════════╣
-║ Preview      ║ Grátis       ║ Explorar dados   ║
-║ SELECT *     ║ Pago         ║ Extração total   ║
-║ LIMIT n      ║ Pode varrer  ║ Raramente usar   ║
-╚══════════════╩══════════════╩══════════════════╝
+```mermaid
+quadrantChart
+  title Preview vs SELECT * vs LIMIT
+  x-axis "Grátis" --> "Pago"
+  y-axis "Seguro" --> "Arriscado"
+  quadrant-1 "Melhor prática"
+  quadrant-2 "Usar com cuidado"
+  quadrant-3 "Raramente útil"
+  quadrant-4 "Evitar"
+  Preview: [0.2, 0.2]
+  "SELECT *": [0.9, 0.9]
+  "LIMIT n": [0.7, 0.6]
 ```
 
 ## 10. Boas Práticas Resumidas

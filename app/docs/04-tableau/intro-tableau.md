@@ -54,31 +54,45 @@ WHERE ano >= 2024
 
 ## Visão Geral da Interface
 
-```
-┌──────────────────────────────────────────────────────────┐
-│  [Dados]  [Planilha1]  [Painel]  [História]             │
-├──────────────────────┬───────────────────────────────────┤
-│  Conexões            │  Abas/Cards                      │
-│  ┌────────────────┐  │  Páginas | Filtros                │
-│  │ Tabelas        │  │  Marcas: Cor, Tam, Rótulo        │
-│  │  • dre         │  │                                  │
-│  │  • balancete   │  │  [COLUNAS]   [LINHAS]            │
-│  │  • centro_custo│  │  ──────────────────────           │
-│  └────────────────┘  │                                  │
-│  Dimensões           │     █████ Viz █████              │
-│  ┌────────────────┐  │     █████ Área █████              │
-│  │  • ano [D]     │  │     ███████████████              │
-│  │  • mes [D]     │  │                                  │
-│  │  • conta [D]   │  │                                  │
-│  └────────────────┘  │                                  │
-│  Medidas             │                                  │
-│  ┌────────────────┐  │                                  │
-│  │  • valor [M]   │  │                                  │
-│  │  • qtd [M]     │  │                                  │
-│  └────────────────┘  │                                  │
-├──────────────────────┴───────────────────────────────────┤
-│  [Mostrador de Dados / Aba Dados]                        │
-└──────────────────────────┴──────────────────────────────┘
+```mermaid
+block-beta
+  columns 3
+  block:Header
+    columns 1
+    Dados Planilha1 Painel História
+  end
+  space
+  block:Left
+    columns 1
+    block:Conn
+      columns 1
+      Conexões
+      Tabelas
+      dre
+      balancete
+      centro_custo
+      Dimensões
+      ano[D] mes[D] conta[D]
+      Medidas
+      valor[M] qtd[M]
+    end
+  end
+  block:Center
+    columns 1
+    Abas
+    Marcas: Cor Tam Rótulo
+    COLUNAS
+    LINHAS
+    block:Viz
+      columns 1
+      Viz
+    end
+  end
+  block:Footer
+    columns 1
+    Mostrador de Dados / Aba Dados
+  end
+end
 ```
 
 No Tableau, a construção de uma visualização segue uma lógica simples:
@@ -89,10 +103,12 @@ No Tableau, a construção de uma visualização segue uma lógica simples:
 
 ## Fluxo de Trabalho na Controladoria
 
-```
-Excel/SAP/SQL → Tableau Prep (limpeza) → Extract .hyper →
-Tableau Desktop (análise e visualização) → 
-Tableau Server/Cloud (compartilhamento)
+```mermaid
+flowchart LR
+  A[Excel/SAP/SQL] --> B[Tableau Prep<br/>Limpeza]
+  B --> C[Extract .hyper]
+  C --> D[Tableau Desktop<br/>Análise e Visualização]
+  D --> E[Tableau Server/Cloud<br/>Compartilhamento]
 ```
 
 Este módulo vai guiá-lo desde os fundamentos até dashboards executivos completos, sempre usando a base **Grupo Nova Era** como estudo de caso.

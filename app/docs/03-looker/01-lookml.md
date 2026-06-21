@@ -30,6 +30,29 @@ meu_modelo_financeiro/
     └── dre_dashboard.lookml
 ```
 
+```mermaid
+graph TD
+    subgraph meu_modelo_financeiro
+        M[manifest.lkml]
+        subgraph model
+            DRE[dre.model.lkml]
+            BAL[balanco.model.lkml]
+        end
+        subgraph views
+            V1[lancamentos_contabeis.view.lkml]
+            V2[plano_contas.view.lkml]
+            V3[centros_custo.view.lkml]
+            V4[dre_resultado.view.lkml]
+        end
+        subgraph includes
+            I[parametros_financeiros.lkml]
+        end
+        subgraph dashboards
+            DB[dre_dashboard.lookml]
+        end
+    end
+```
+
 ## Arquivos `.view` — A Unidade Fundamental
 
 Uma **view** representa uma tabela (ou uma CTE) e expõe seus campos como `dimensions` e `measures`.

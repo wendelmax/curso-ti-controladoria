@@ -18,25 +18,20 @@ Um dashboard no Tableau é uma tela que combina múltiplas visualizações (plan
 
 Para o **Dashboard de Resultados Grupo Nova Era**, usaremos este layout:
 
-```
-┌──────────────────────────────────────────────────────────┐
-│  HEADER: Grupo Nova Era — Dashboard de Resultados 2025   │
-├────────────┬────────────┬────────────┬───────────────────┤
-│ Receita    │ Despesa    │ Margem     │ EBITDA            │
-│ R$ XX      │ R$ XX      │  XX%       │  R$ XX            │
-├────────────┴────────────┴────────────┴───────────────────┤
-│                                                          │
-│  [Gráfico de Linha: Receita vs Despesa mensal]           │
-│                                                          │
-├────────────────────────────────────┬─────────────────────┤
-│  [Treemap: Despesas por Depto]    │ [Tabela: Top 10     │
-│                                    │  Clientes]           │
-├────────────────────────────────────┴─────────────────────┤
-│  [Waterfall: DRE Trimestral]                              │
-│                                                          │
-├────────────┬────────────┬────────────────────────────────┤
-│ [Filtros]  │ [Legenda]  │  Atualizado: Jun/2025          │
-└────────────┴────────────┴────────────────────────────────┘
+```mermaid
+block-beta
+  columns 4
+  Header("HEADER: Grupo Nova Era — Dashboard de Resultados 2025"):4
+  KPI1("Receita<br/>R$ XX") KPI2("Despesa<br/>R$ XX") KPI3("Margem<br/>XX%") KPI4("EBITDA<br/>R$ XX")
+  Graph("Gráfico de Linha: Receita vs Despesa mensal"):4
+  block:Row2
+    columns 2
+    Treemap("Treemap: Despesas por Depto")
+    Table("Tabela: Top 10 Clientes")
+  end
+  Waterfall("Waterfall: DRE Trimestral"):4
+  Filters("Filtros") Legend("Legenda") space Update("Atualizado: Jun/2025")
+end
 ```
 
 ### Passo 2: Criar as Planilhas (Worksheets)
@@ -86,6 +81,22 @@ Container Vertical → itens empilhados
   └── Container Horizontal
        ├── treemap_despesas
        └── top_clientes
+```
+
+```mermaid
+block-beta
+  columns 1
+  Header("Header")
+  block:KPIs
+    columns 4
+    kpi_receita kpi_despesa kpi_margem kpi_ebitda
+  end
+  rec_desp_mensal
+  block:Row2
+    columns 2
+    treemap_despesas top_clientes
+  end
+end
 ```
 
 **Dica:** Use **Container Horizontal** para KPIs lado a lado e **Container Vertical** para seções empilhadas. O aninhamento correto permite layout responsivo.

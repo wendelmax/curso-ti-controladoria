@@ -39,23 +39,32 @@ No Tableau, todo campo é classificado automaticamente como **dimensão** ou **m
 
 A interface do Tableau possui prateleiras fundamentais:
 
-```
-┌─────────────────────────────────────────────────────────┐
-│ COLUNAS                                                  │
-│   [ano]                                                  │
-├─────────────────────────────────────────────────────────┤
-│ LINHAS                                                   │
-│   SUM([valor])                                           │
-├─────────────────────────────────────────────────────────┤
-│ FILTROS                                                  │
-│   [departamento] = "Financeiro"                          │
-├─────────────────────────────────────────────────────────┤
-│ MARCAS                                                   │
-│   ⊙ Cor    → [categoria]                                │
-│   ⊙ Rotulo → SUM([valor])                               │
-│   ⊙ Detalhe → [centro_custo]                            │
-│   ⊙ Tamanho → SUM([qtd])                                │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+block-beta
+  columns 1
+  block:Col
+    columns 1
+    COLUNAS
+    ano
+  end
+  block:Lin
+    columns 1
+    LINHAS
+    SUM([valor])
+  end
+  block:Fil
+    columns 1
+    FILTROS
+    departamento = "Financeiro"
+  end
+  block:Mar
+    columns 3
+    Cor categoria
+    Rótulo SUM([valor])
+    Detalhe centro_custo
+    Tamanho SUM([qtd])
+  end
+end
 ```
 
 ### Colunas e Linhas

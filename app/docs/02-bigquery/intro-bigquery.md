@@ -4,6 +4,10 @@
 
 BigQuery é o data warehouse serverless do Google Cloud. Diferente de bancos SQL tradicionais, ele processa **petabytes** de dados com SQL padrão, sem precisar gerenciar servidores.
 
+:::tip Traduzindo para o seu dia a dia
+Imagine que seu ERP tem 10 anos de dados financeiros — milhões de lançamentos. No SQLite (nosso playground), consultar tudo isso demoraria minutos ou travaria. No BigQuery, a mesma consulta leva **segundos** e você paga centavos. É como trocar uma calculadora de pilha por um supercomputador — mas usando o mesmo SQL que você já aprendeu.
+:::
+
 ## Por que BigQuery para Controladoria?
 
 - Processe **anos de dados financeiros** em segundos

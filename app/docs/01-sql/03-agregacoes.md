@@ -1,5 +1,9 @@
 # 1.3 — Agregações e Agrupamentos
 
+:::tip Traduzindo para o seu dia a dia
+GROUP BY é como a **tabela dinâmica do Excel**. Você já deve ter selecionado dados, ido em "Inserir > Tabela Dinâmica", arrastado "Mês" para as linhas e "Valor" para os valores. GROUP BY faz exatamente isso: `GROUP BY mes` + `SUM(valor)` = total agrupado por mês. A diferença é que no SQL você escreve a lógica em vez de arrastar campos.
+:::
+
 ## Funções de Agregação
 
 Funções que operam sobre **conjuntos de linhas** e retornam **um único valor**:
@@ -82,6 +86,13 @@ GROUP BY id_empresa, id_centro_custo;
 ## HAVING — Filtrando grupos
 
 O `HAVING` filtra **após** o `GROUP BY` (diferente do `WHERE` que filtra **antes**):
+
+:::tip Dica
+- `WHERE` = filtra **linhas originais** antes de agrupar
+- `HAVING` = filtra **grupos já calculados** depois de agrupar
+
+Pense assim: WHERE é o filtro na matéria-prima, HAVING é o filtro no produto pronto.
+:::
 
 ```sql
 SELECT

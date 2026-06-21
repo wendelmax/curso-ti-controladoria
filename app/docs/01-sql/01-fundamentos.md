@@ -1,5 +1,9 @@
 # 1.1 — Fundamentos do SQL
 
+:::tip Traduzindo para o seu dia a dia
+Pense no SQL como **pedir um relatório** para seu estagiário. SELECT é você dizendo "me mostre as colunas X, Y, Z". FROM é você dizendo "da pasta tal". ORDER BY é "ordenado por tal coluna". LIMIT é "só os 10 primeiros". O banco de dados é o estagiário que busca a informação para você.
+:::
+
 ## SELECT e FROM
 
 O comando mais básico do SQL: **selecionar** colunas **de** uma tabela.
@@ -38,6 +42,10 @@ SELECT * FROM lancamentos_contabeis LIMIT 10;
 SELECT * FROM clientes LIMIT 5;
 ```
 
+:::caution Cuidado com SELECT *
+Usar `SELECT *` é como **imprimir uma pasta inteira sem saber quantas páginas tem**. Em tabelas pequenas (`clientes`, `empresas`) não tem problema. Mas em tabelas gigantes (`lancamentos_contabeis` com milhões de linhas), pode travar o banco ou trazer milhares de colunas que você nem precisa. **Sempre prefira listar só as colunas que você realmente precisa.**
+:::
+
 ## Aliases com AS
 
 Renomeie colunas na saída para ficar mais legível:
@@ -64,6 +72,10 @@ ORDER BY salario DESC;
 ```
 
 `ASC` = crescente (padrão), `DESC` = decrescente.
+
+:::note Lembre-se
+Se você não escrever `ORDER BY`, o banco devolve os registros **em qualquer ordem** — geralmente na ordem em que foram inseridos, mas sem garantia. Se a ordem importa, use `ORDER BY`.
+:::
 
 ## Comentários
 

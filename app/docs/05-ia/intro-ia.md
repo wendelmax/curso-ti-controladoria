@@ -4,6 +4,10 @@
 
 A Inteligência Artificial está transformando a controladoria. De detecção de fraudes a previsão de fluxo de caixa, as ferramentas de IA já são realidade no mercado.
 
+:::tip Não se assuste com "IA"
+Se você nunca estudou inteligência artificial, saiba que **este módulo foi feito para você**. Zero Python. Zero matemática universitária. Usaremos SQL para criar modelos preditivos e ferramentas visuais para entender os resultados. Você não precisa saber como um motor funciona para dirigir um carro — aqui é a mesma coisa.
+:::
+
 ## Para que IA na Controladoria?
 
 - **Automatizar** classificação contábil de milhares de lançamentos

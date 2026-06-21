@@ -1,5 +1,9 @@
 # 1.2 — Filtrando Dados com WHERE
 
+:::tip Traduzindo para o seu dia a dia
+WHERE é como o **filtro automático do Excel**. Você já deve ter selecionado uma coluna, clicado no ícone de funil e marcado só "SP" e "RJ". WHERE faz exatamente isso: `WHERE uf = 'SP'` = "me mostre só as linhas onde a UF é SP". A diferença é que no SQL você escreve o filtro em vez de clicar em caixinhas.
+:::
+
 ## WHERE — A cláusula essencial
 
 Filtra linhas que atendem a uma condição:
@@ -26,6 +30,10 @@ FROM contas_pagar
 WHERE status = 'aberto'
   AND data_vencimento < '2026-06-15';
 ```
+
+:::caution Erro clássico: esquecer as aspas
+No SQL, **texto** (strings) vai entre **aspas simples**: `WHERE status = 'aberto'`. Se você esquecer as aspas, o SQL acha que `aberto` é nome de coluna e dá erro. Números não precisam de aspas: `WHERE salario > 10000` está correto.
+:::
 
 ## Operadores de Comparação
 
@@ -91,7 +99,7 @@ Inclui os valores extremos.
 
 ## LIKE — Busca por padrão
 
-- `%` — qualquer sequência de caracteres
+- `%` — qualquer sequência de caracteres (o coringa)
 - `_` — um único caractere
 
 ```sql
@@ -105,6 +113,13 @@ SELECT nome, cargo
 FROM funcionarios
 WHERE cargo LIKE 'Analista%';
 ```
+
+:::tip Dica
+- `'%Distribuidora%'` = contém "Distribuidora" em qualquer posição
+- `'Distribuidora%'` = começa com "Distribuidora"
+- `'%Distribuidora'` = termina com "Distribuidora"
+- `'Analista_'` = "Analista" + exatamente 1 caractere (ex: "Analista1", "AnalistaA")
+:::
 
 ## IS NULL — Valores nulos
 

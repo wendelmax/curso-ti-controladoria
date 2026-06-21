@@ -17,31 +17,32 @@ function validateLookML(code) {
   const lines = code.split('\n');
 
   if (!code.includes('view ') && !code.includes('explore ')) {
-    errors.push('Deve conter ao menos um view ou explore block.');
+    errors.push('Deve conter ao menos um "view" ou "explore" — são os blocos principais do LookML.');
   }
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const trimmed = line.trim();
+    if (!trimmed) continue;
 
     if (trimmed.includes('dimension:') && !trimmed.endsWith('{') && !trimmed.match(/^\s*dimension:\s*\w+/)) {
-      errors.push(`Linha ${i + 1}: formato de dimension inválido. Use: dimension: nome {`);
+      errors.push(`Linha ${i + 1}: toda dimension precisa de um nome e chaves { }. Ex: dimension: nome {`);
     }
     if (trimmed.includes('measure:') && !trimmed.endsWith('{') && !trimmed.match(/^\s*measure:\s*\w+/)) {
-      errors.push(`Linha ${i + 1}: formato de measure inválido. Use: measure: nome {`);
+      errors.push(`Linha ${i + 1}: toda measure precisa de um nome e chaves { }. Ex: measure: total {`);
     }
     if (trimmed.startsWith('sql:') && !trimmed.includes('${TABLE}') && !trimmed.includes(';')) {
-      errors.push(`Linha ${i + 1}: sql: deve referenciar ${'${TABLE}.coluna'} ou terminar com ;`);
+      errors.push(`Linha ${i + 1}: sql: deve referenciar a tabela com \${TABLE}.coluna ou terminar com ;`);
     }
     if (trimmed.includes('type:') && !trimmed.match(/type:\s*(string|number|count|sum|avg|date|yesno|duration)\s*;/) && !trimmed.includes('{')) {
-      errors.push(`Linha ${i + 1}: type inválido. Tipos válidos: string, number, count, sum, avg, date, yesno, duration`);
+      errors.push(`Linha ${i + 1}: type inválido. Use um destes: string, number, count, sum, avg, date, yesno, duration`);
     }
   }
 
   const openBraces = (code.match(/\{/g) || []).length;
   const closeBraces = (code.match(/\}/g) || []).length;
   if (openBraces !== closeBraces) {
-    errors.push(`Chaves desbalanceadas: ${openBraces} abertas, ${closeBraces} fechadas`);
+    errors.push(`Suas chaves estão desbalanceadas: ${openBraces} abertas { e ${closeBraces} fechadas }. Toda { precisa de um } correspondente.`);
   }
 
   return errors;
@@ -114,6 +115,7 @@ export default function LookMLEditor() {
   const [valid, setValid] = useState(false);
   const [activeChallenge, setActiveChallenge] = useState(null);
   const [challengeSolved, setChallengeSolved] = useState({});
+  const [showSolution, setShowSolution] = useState(false);
 
   const handleValidate = () => {
     const result = validateLookML(code);
@@ -127,9 +129,10 @@ export default function LookMLEditor() {
 
   const loadChallenge = (ch) => {
     setActiveChallenge(ch);
-    setCode(ch.solution);
+    setCode('');
     setErrors([]);
     setValid(false);
+    setShowSolution(false);
   };
 
   const cardStyle = {
@@ -199,7 +202,28 @@ export default function LookMLEditor() {
                 }}>
                 Validar LookML
               </button>
+              <button onClick={() => {
+                setShowSolution(true);
+                setCode(activeChallenge.solution);
+              }}
+                style={{
+                  padding: '0.5rem 1.25rem', border: '1px solid var(--ifm-color-emphasis-300)',
+                  borderRadius: '6px', background: 'var(--ifm-color-emphasis-100)',
+                  cursor: 'pointer', fontWeight: 500, fontSize: '0.9rem',
+                }}>
+                Ver solução
+              </button>
             </div>
+
+            {showSolution && (
+              <div style={{
+                marginTop: '0.75rem', padding: '0.6rem 1rem', borderRadius: '6px',
+                background: '#fff8e1', border: '1px solid #ffd54f',
+                fontSize: '0.85rem', color: '#f57f17',
+              }}>
+                💡 Solução carregada. Compare com seu código e tente entender cada parte. Depois tente fazer outro desafio sem consultar a solução.
+              </div>
+            )}
 
             {valid && (
               <div style={{

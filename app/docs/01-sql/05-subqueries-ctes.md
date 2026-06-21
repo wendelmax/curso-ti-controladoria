@@ -1,5 +1,13 @@
 # 1.5 — Subqueries e CTEs
 
+:::tip Traduzindo para o seu dia a dia
+Subquery é como fazer **uma conta de cálculo separada no Excel e usar o resultado em outra fórmula**.
+
+Exemplo: "Quero os funcionários que ganham acima da média". Primeiro você calcula a média (conta 1), depois usa esse valor para filtrar (conta 2). No SQL, você faz as duas contas numa query só — a subquery calcula a média, e a query principal usa esse resultado.
+
+CTE (WITH) é como **rascunhar a conta num papel à parte, dar um nome a ela, e depois usar esse nome na conta final**. Muito mais organizado do que aninhar tudo.
+:::
+
 ## Subqueries (Subconsultas)
 
 Uma consulta dentro de outra consulta. Pode estar no `WHERE`, `FROM` ou `SELECT`.
@@ -15,6 +23,26 @@ WHERE salario > (
 ```
 
 ### Exemplo 1: Clientes com faturamento acima da média
+
+Vamos por partes. Primeiro, encontramos o faturamento total de cada cliente:
+
+```sql
+SELECT id_cliente, SUM(valor_liquido) AS total
+FROM faturamento
+GROUP BY id_cliente;
+```
+
+Depois, calculamos a média desses totais:
+
+```sql
+SELECT AVG(total) FROM (
+    SELECT SUM(valor_liquido) AS total
+    FROM faturamento
+    GROUP BY id_cliente
+);
+```
+
+Agora, juntamos tudo: clientes cujo faturamento total é maior que essa média:
 
 ```sql
 SELECT nome, cidade
@@ -32,6 +60,10 @@ WHERE id_cliente IN (
     )
 );
 ```
+
+:::note Respira
+Sim, essa query tem 3 níveis de aninhamento. É complexa mesmo. Na prática, você usaria **CTEs** (que vamos ver já já) para organizar isso em etapas legíveis. Mas é importante entender que subqueries existem e funcionam assim.
+:::
 
 ### Subquery no FROM (tabela derivada)
 
@@ -71,6 +103,29 @@ WITH nome_cte AS (
 )
 SELECT colunas FROM nome_cte;
 ```
+
+:::tip Dica
+CTEs são como **pedaços de papel**: você resolve uma parte do problema em cada pedaço, dá um nome a ele, e no final junta tudo. Muito mais fácil de entender e dar manutenção do que subqueries aninhadas.
+
+A mesma query do exemplo anterior, com CTEs:
+
+```sql
+WITH fat_por_cliente AS (
+    SELECT id_cliente, SUM(valor_liquido) AS total
+    FROM faturamento
+    GROUP BY id_cliente
+),
+media_geral AS (
+    SELECT AVG(total) AS media FROM fat_por_cliente
+)
+SELECT c.nome, c.cidade
+FROM clientes c
+INNER JOIN fat_por_cliente fpc ON c.id_cliente = fpc.id_cliente
+WHERE fpc.total > (SELECT media FROM media_geral);
+```
+
+Bem mais claro, não?
+:::
 
 ### Exemplo 2: Top 5 clientes por faturamento
 

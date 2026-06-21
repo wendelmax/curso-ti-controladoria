@@ -2,7 +2,13 @@
 
 Case studies reais que você vai enfrentar no dia-a-dia da controladoria.
 
+Cada case abaixo mostra um problema real seguido da solução em SQL. Tente entender **o problema primeiro**, depois veja como o SQL resolve.
+
 ## Case 1: Conciliação Bancária
+
+:::note O problema
+O auditor quer saber: o saldo da conta "Banco Conta Movimento" nos lançamentos contábeis é o mesmo do extrato bancário? Sem SQL, você somaria manualmente débitos e créditos no Excel. Com SQL, a query abaixo faz isso em segundos para todos os meses de uma vez.
+:::
 
 Comparar lançamentos contábeis com extratos (simulados):
 
@@ -27,6 +33,10 @@ ORDER BY mes;
 
 ## Case 2: DRE Analítica
 
+:::note O problema
+Chegou o fechamento do mês e a diretoria quer a DRE (Demonstração do Resultado do Exercício) completa. No ERP, você teria que gerar um relatório específico. Com SQL, você monta a DRE exatamente como precisa: contas, valores, período.
+:::
+
 Demonstração do Resultado do mês de junho/2026:
 
 ```sql
@@ -42,6 +52,10 @@ ORDER BY p.codigo;
 ```
 
 ## Case 3: Fluxo de Caixa Projetado
+
+:::note O problema
+O CFO quer saber: vamos ter caixa para pagar as contas nos próximos 90 dias? Você precisa projetar entradas (contas a receber) vs saídas (contas a pagar) por faixa de vencimento. No Excel, você faria tabelas dinâmicas separadas e depois juntaria com PROCV. No SQL, tudo numa query só.
+:::
 
 Contas a receber vs contas a pagar nos próximos 30, 60, 90 dias:
 
@@ -81,6 +95,10 @@ ORDER BY r.faixa;
 ```
 
 ## Case 4: Aging de Contas a Receber
+
+:::note O problema
+O relatório de aging mostra quais clientes estão com contas em atraso e há quanto tempo. Essencial para cobrança e provisionamento de devedores duvidosos. No Excel, você calcularia com `HOJE() - data_vencimento` e classificaria com `SE`. No SQL, usamos `JULIANDAY` e `CASE`.
+:::
 
 Antiguidade de saldos:
 

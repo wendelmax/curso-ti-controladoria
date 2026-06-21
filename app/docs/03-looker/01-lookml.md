@@ -4,6 +4,12 @@
 
 LookML é a linguagem de modelagem semântica do Looker. É uma linguagem declarativa baseada em YAML que define:
 
+:::note Respira — isso não é programação complicada
+LookML parece estranho à primeira vista: chaves `{}`, dois-pontos `:`, cifrão `${}`, ponto-e-vírgula duplo `;;`. Mas a lógica é simples: você está **descrevendo** uma tabela (não programando um sistema).
+
+Cada `dimension` é uma coluna da sua tabela. Cada `measure` é um cálculo (soma, contagem). É como preencher uma ficha cadastral — campo por campo.
+:::
+
 - **O quê** os usuários podem consultar (dimensões, medidas)
 - **Como** esses campos são calculados (SQL subjacente)
 - **Relacionamentos** entre entidades (joins)

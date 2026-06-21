@@ -1,8 +1,16 @@
 # Módulo 1: SQL para Análise Financeira
 
-**Carga horária: 16h** 
+**Carga horária: 16h**
 
 SQL (Structured Query Language) é a linguagem universal para consultar dados. Como profissional de controladoria, você usará SQL diariamente para extrair informações de ERPs, data warehouses e sistemas fiscais.
+
+:::tip Por que SQL para controladoria?
+Imagine que você precisa do total de vendas por cliente, mas a informação está espalhada em 3 sistemas diferentes. No Excel, você passaria horas com PROCV, tabela dinâmica e macros. No SQL, você escreve **uma pergunta** (uma query) e o banco responde em segundos. É como ter um assistente que busca qualquer informação que você pedir — desde que você saiba pedir do jeito certo.
+:::
+
+:::note SQL não é programação de verdade
+Se você nunca programou, não se assuste. SQL é uma **linguagem de consulta**, não de programação. Você não precisa criar sistemas ou aplicativos. Você só precisa **fazer perguntas** ao banco de dados. É mais parecido com montar um filtro no Excel do que com programar um sistema.
+:::
 
 ## O Que Você Vai Aprender
 
@@ -19,7 +27,7 @@ SQL (Structured Query Language) é a linguagem universal para consultar dados. C
 
 ## Como Praticar
 
-Cada aula tem exemplos que você pode executar no **SQL Playground**. 
+Cada aula tem exemplos que você pode executar no **SQL Playground**.
 Clique em "SQL Playground" na barra de navegação superior ou abra diretamente.
 
 > **Dica:** Pressione `Ctrl+Enter` para executar queries no playground.

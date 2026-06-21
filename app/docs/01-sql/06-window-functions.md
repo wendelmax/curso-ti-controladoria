@@ -1,5 +1,13 @@
 # 1.6 — Window Functions (Funções Janela)
 
+:::tip Traduzindo para o seu dia a dia
+Window Function é como uma **fórmula de Excel que você arrasta para baixo**, mantendo um acumulado ou ranking.
+
+Diferença crucial do GROUP BY: no GROUP BY, você perde as linhas individuais (vira um resumo). Na window function, **cada linha original continua existindo**, mas você ganha uma coluna extra com o cálculo.
+
+Exemplo prático: você quer o total de vendas do mês **sem agrupar** — cada venda individual aparece, mas com uma coluna extra mostrando o total do mês. No Excel, você faria `=SOMASE(A:A; mês; C:C)` e arrastaria para baixo. Window function faz a mesma coisa no SQL.
+:::
+
 Window functions realizam cálculos **através de um conjunto de linhas relacionadas** sem agrupar os resultados.
 
 São essenciais para: saldos acumulados, rankings, médias móveis, comparações período-a-período.
@@ -40,8 +48,16 @@ INNER JOIN clientes c ON f.id_cliente = c.id_cliente
 GROUP BY c.nome;
 ```
 
-- `RANK`: pula números em empates (1, 1, 3)
-- `DENSE_RANK`: não pula (1, 1, 2)
+- `RANK`: pula números em empates (1, 1, 3) — tipo competição onde dois primeiros colocados pulam o 2º lugar
+- `DENSE_RANK`: não pula (1, 1, 2) — tipo lista de prioridades onde empates não geram "buracos"
+
+:::caution RANK vs DENSE_RANK
+Qual usar? Depende:
+- **RANK**: quando o número de posição importa (ex: "o 3º lugar está 2 posições atrás do 1º")
+- **DENSE_RANK**: quando o valor do ranking importa (ex: "quantos valores distintos existem acima")
+
+Na dúvida, use `DENSE_RANK` — é o mais comum em relatórios financeiros.
+:::
 
 ## SUM() OVER — Acumulando valores
 

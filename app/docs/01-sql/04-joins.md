@@ -1,5 +1,16 @@
 # 1.4 — Trabalhando com JOINs
 
+:::tip Traduzindo para o seu dia a dia
+JOIN é como o **PROCV do Excel**, mas muito mais poderoso.
+
+No Excel, para trazer o nome do cliente para uma planilha de vendas, você usava PROCV: procura o ID do cliente na tabela de clientes e traz o nome. No SQL, você faz a mesma coisa com JOIN:
+
+- `INNER JOIN` = PROCV que **só traz quando acha correspondência** (se não achar o cliente, a linha não aparece)
+- `LEFT JOIN` = PROCV que **mantém tudo da planilha original**, mesmo sem correspondência (o nome do cliente fica em branco)
+
+A vantagem do SQL? Você pode juntar 3, 5, 10 tabelas de uma vez — algo que no Excel viraria uma loucura de PROCVs aninhados.
+:::
+
 Na controladoria, raramente uma tabela contém toda a informação necessária. JOINs permitem **combinar dados de múltiplas tabelas** através de chaves relacionadas.
 
 ## INNER JOIN
@@ -101,11 +112,27 @@ ORDER BY d.ano, d.mes, p.codigo;
 
 ## Dica: Aliases de tabela
 
-`FROM lancamentos_contabeis l` — o `l` é um alias. Use aliases curtos para escrever menos.
+`FROM lancamentos_contabeis l` — o `l` é um alias (apelido). Use aliases curtos para não precisar digitar o nome inteiro da tabela toda vez.
+
+:::tip Dica
+Aliases comuns que você vai ver na prática:
+- `l` para `lancamentos_contabeis`
+- `p` para `planos_contas`
+- `f` para `faturamento` ou `funcionarios`
+- `c` para `clientes` ou `centros_custo`
+- `cp` para `contas_pagar`
+- `cr` para `contas_receber`
+
+Escolha o sentido que fizer mais claro para você.
+:::
 
 ## Nulos em LEFT JOIN
 
-Útil para encontrar registros "órfãos":
+Útil para encontrar registros "órfãos" — aqueles que não têm correspondência na outra tabela:
+
+:::caution Cuidado com CROSS JOIN acidental
+Se você fizer um JOIN **sem a condição ON**, o SQL combina **cada** linha de uma tabela com **todas** as linhas da outra. Se a tabela A tem 1.000 linhas e a B tem 500, o resultado terá 500.000 linhas. Isso se chama **CROSS JOIN** (produto cartesiano) e quase nunca é o que você quer. **Sempre verifique se o ON está correto.**
+:::
 
 ```sql
 SELECT f.nome

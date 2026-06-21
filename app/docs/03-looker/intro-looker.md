@@ -4,6 +4,15 @@
 
 Looker é uma plataforma de business intelligence e analytics da Google Cloud que adota uma abordagem baseada em **modelagem semântica**. Diferente de ferramentas tradicionais que operam diretamente sobre tabelas e SQL, o Looker utiliza uma camada intermediária — o LookML — que define as regras de negócio, métricas e relacionamentos de forma centralizada e reutilizável.
 
+:::tip Traduzindo para o seu dia a dia
+Pense no LookML como a **receita do bolo**:
+- **View** = a lista de ingredientes (quais campos existem na tabela)
+- **Model/Explore** = o modo de preparo (como os ingredientes se relacionam)
+- **Dashboard** = o bolo pronto (o resultado que o usuário final vê)
+
+A grande vantagem? O contador/controller **nunca precisará escrever LookML**. Ele só consome os dashboards. Quem escreve o LookML é o analista de BI. Mas entender como funciona ajuda você a saber o que é possível pedir.
+:::
+
 ## Por que Looker para Finanças?
 
 | Característica | Benefício para Controladoria |

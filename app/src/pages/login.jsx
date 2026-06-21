@@ -49,7 +49,7 @@ function LoginForm() {
       <Auth
         supabaseClient={supabase}
         appearance={{ theme: ThemeSupa }}
-        providers={['google', 'github']}
+        providers={[]}
         localization={{
           variables: {
             sign_in: {

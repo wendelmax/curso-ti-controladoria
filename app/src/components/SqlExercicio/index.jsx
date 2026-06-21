@@ -13,6 +13,75 @@ async function getDatabase(SQL) {
   return cachedDb;
 }
 
+const ERROR_TRANSLATIONS = [
+  [/near "([^"]+)": syntax error/i, (_, token) => `Erro de sintaxe perto de "${token}". Verifique a digitação — você quis digitar "${suggestCorrection(token)}"?`],
+  [/no such table: (\w+)/i, (_, tbl) => `Tabela "${tbl}" não encontrada. As tabelas disponíveis são: lancamentos, contas, clientes, fornecedores, centros_custo, plano_contas.`],
+  [/no such column: (\w+)/i, (_, col) => `Coluna "${col}" não encontrada. Verifique os nomes das colunas na tabela que você está consultando.`],
+  [/unrecognized token/i, () => 'Caractere não reconhecido. Verifique aspas, vírgulas e parênteses.' ],
+  [/ORDER BY clause should come after/i, () => 'A cláusula ORDER BY deve vir depois do GROUP BY, não antes.' ],
+  [/GROUP BY clause should come after/i, () => 'A cláusula GROUP BY deve vir depois do WHERE, não antes.' ],
+  [/syntax error/i, () => 'Erro de sintaxe no SQL. Verifique a estrutura do comando.' ],
+  [/multiple statements/i, () => 'Execute apenas uma consulta por vez.'],
+];
+
+function suggestCorrection(token) {
+  const corrections = {
+    'SELEC': 'SELECT', 'SELET': 'SELECT', 'SELCT': 'SELECT',
+    'FOM': 'FROM', 'FORM': 'FROM', 'FRO': 'FROM',
+    'WHER': 'WHERE', 'WHRE': 'WHERE', 'WHE': 'WHERE',
+    'GROP': 'GROUP', 'GRUP': 'GROUP',
+    'HAVING': 'HAVING', 'HAVNG': 'HAVING',
+    'ORDRE': 'ORDER', 'OREDER': 'ORDER',
+    'JOI': 'JOIN', 'JO': 'JOIN',
+    'ON': 'ON', 'O': 'ON',
+    'AND': 'AND', 'ADN': 'AND',
+    'OR': 'OR',
+    'IN': 'IN',
+    'NOT': 'NOT', 'NOTT': 'NOT',
+    'NULL': 'NULL', 'NUL': 'NULL',
+    'AS': 'AS', 'A': 'AS',
+    'LIMIT': 'LIMIT', 'LIMT': 'LIMIT',
+    'DISTINCT': 'DISTINCT', 'DISTCT': 'DISTINCT',
+    'COUNT': 'COUNT', 'COUN': 'COUNT', 'CONT': 'COUNT',
+    'SUM': 'SUM', 'SU': 'SUM',
+    'AVG': 'AVG', 'AV': 'AVG',
+    'MIN': 'MIN', 'MI': 'MIN',
+    'MAX': 'MAX', 'MA': 'MAX',
+    'INSERT': 'INSERT', 'INSRT': 'INSERT',
+    'UPDATE': 'UPDATE', 'UPDTE': 'UPDATE',
+    'DELETE': 'DELETE', 'DELTE': 'DELETE',
+    'CREATE': 'CREATE', 'CRETE': 'CREATE',
+    'TABLE': 'TABLE', 'TABL': 'TABLE',
+    'INNER': 'INNER', 'INER': 'INNER',
+    'LEFT': 'LEFT', 'LEF': 'LEFT',
+    'RIGHT': 'RIGHT', 'RIGTH': 'RIGHT',
+    'CROSS': 'CROSS', 'CROS': 'CROSS',
+    'DESC': 'DESC', 'DES': 'DESC',
+    'ASC': 'ASC', 'AS': 'ASC',
+    'BETWEEN': 'BETWEEN', 'BETWN': 'BETWEEN',
+    'LIKE': 'LIKE', 'LIK': 'LIKE',
+    'IS': 'IS', 'I': 'IS',
+    'CASE': 'CASE', 'CAS': 'CASE',
+    'WHEN': 'WHEN', 'WHN': 'WHEN',
+    'THEN': 'THEN', 'THN': 'THEN',
+    'ELSE': 'ELSE', 'ELS': 'ELSE',
+    'END': 'END', 'EN': 'END',
+    'CAST': 'CAST', 'CAST': 'CAST',
+    'COALESCE': 'COALESCE', 'COALSC': 'COALESCE',
+    'NULLIF': 'NULLIF', 'NULIF': 'NULLIF',
+  };
+  const upper = token.toUpperCase();
+  return corrections[upper] || upper;
+}
+
+function translateSqlError(msg) {
+  for (const [regex, handler] of ERROR_TRANSLATIONS) {
+    const match = msg.match(regex);
+    if (match) return handler(...match);
+  }
+  return `Erro SQL: ${msg}`;
+}
+
 function normalizeSql(sql) {
   return sql.replace(/;+$/, '').trim().replace(/\s+/g, ' ').toLowerCase();
 }
@@ -72,6 +141,9 @@ export default function SqlExercicio({
   const [saved, setSaved] = useState(null);
   const [initError, setInitError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [expectedResult, setExpectedResult] = useState(null);
+  const [studentResult, setStudentResult] = useState(null);
+  const [showExpected, setShowExpected] = useState(false);
 
   useEffect(() => {
     import('sql.js').then(async (mod) => {
@@ -122,10 +194,14 @@ export default function SqlExercicio({
     setStatus('running');
     setMessage('');
     setFeedback(null);
+    setExpectedResult(null);
+    setStudentResult(null);
+    setShowExpected(false);
 
     try {
       const { db } = sqlJsRef.current;
-      const studentResult = db.exec(sql);
+      const studentRaw = db.exec(sql);
+      const expectedRaw = db.exec(expectedSql);
       let isCorrect = false;
 
       if (validation === 'exact') {
@@ -133,20 +209,20 @@ export default function SqlExercicio({
         const normalizedExpected = normalizeSql(expectedSql);
         isCorrect = normalizedStudent === normalizedExpected;
       } else {
-        const expectedResult = db.exec(expectedSql);
-        const studentRows = studentResult.length > 0 ? studentResult[0].values : [];
-        const expectedRows = expectedResult.length > 0 ? expectedResult[0].values : [];
+        const studentRows = studentRaw.length > 0 ? studentRaw[0].values : [];
+        const expectedRows = expectedRaw.length > 0 ? expectedRaw[0].values : [];
         isCorrect = resultsMatch(studentRows, expectedRows);
       }
 
       if (isCorrect) {
         setStatus('correct');
         setMessage('Resposta correta!');
-        setFeedback(studentResult);
+        setFeedback(studentRaw);
 
         const entry = { done: true, date: new Date().toISOString() };
         saveLocal(id, entry);
         setSaved(entry);
+        window.dispatchEvent(new CustomEvent('sidebar-progress-update'));
 
         if (user && supabase) {
           setSaving(true);
@@ -160,12 +236,17 @@ export default function SqlExercicio({
         }
       } else {
         setStatus('wrong');
-        setMessage('O resultado não corresponde ao esperado.');
-        setFeedback(null);
+        setMessage('O resultado não corresponde ao esperado. Veja a diferença abaixo.');
+        const sCols = studentRaw.length > 0 ? studentRaw[0].columns : [];
+        const sRows = studentRaw.length > 0 ? studentRaw[0].values : [];
+        const eCols = expectedRaw.length > 0 ? expectedRaw[0].columns : [];
+        const eRows = expectedRaw.length > 0 ? expectedRaw[0].values : [];
+        setStudentResult({ columns: sCols, rows: sRows });
+        setExpectedResult({ columns: eCols, rows: eRows });
       }
     } catch (err) {
       setStatus('error');
-      setMessage(err.message);
+      setMessage(translateSqlError(err.message));
     }
   }, [expectedSql, validation, id, user, supabase]);
 
@@ -177,6 +258,9 @@ export default function SqlExercicio({
     setMessage('');
     setFeedback(null);
     setShowHint(false);
+    setExpectedResult(null);
+    setStudentResult(null);
+    setShowExpected(false);
   };
 
   const cardStyle = {
@@ -318,6 +402,95 @@ export default function SqlExercicio({
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {status === 'wrong' && expectedResult && !showExpected && (
+          <div style={{ marginTop: '0.75rem' }}>
+            <button onClick={() => setShowExpected(true)}
+              style={{
+                padding: '0.4rem 1rem', border: '1px solid var(--ifm-color-emphasis-300)',
+                borderRadius: '4px', background: 'transparent', cursor: 'pointer',
+                fontSize: '0.85rem', color: 'var(--ifm-color-emphasis-700)',
+              }}>
+              &#128065; Ver resultado esperado
+            </button>
+          </div>
+        )}
+
+        {showExpected && expectedResult && (
+          <div style={{ marginTop: '0.75rem' }}>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ flex: '1 1 300px', overflowX: 'auto' }}>
+                <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#e74c3c', marginBottom: '0.3rem' }}>
+                  &#10007; Seu resultado ({studentResult.rows.length} linhas)
+                </p>
+                {studentResult.rows.length > 0 ? (
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+                    <thead>
+                      <tr>
+                        {studentResult.columns.map((col, i) => (
+                          <th key={i} style={{
+                            padding: '0.25rem 0.5rem', border: '1px solid var(--ifm-color-emphasis-300)',
+                            background: '#fdedec', textAlign: 'left', whiteSpace: 'nowrap',
+                          }}>{col}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {studentResult.rows.map((row, ri) => (
+                        <tr key={ri}>
+                          {row.map((val, ci) => (
+                            <td key={ci} style={{
+                              padding: '0.2rem 0.5rem', border: '1px solid var(--ifm-color-emphasis-300)',
+                            }}>{val === null ? 'NULL' : String(val)}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p style={{ fontSize: '0.8rem', color: 'var(--ifm-color-emphasis-500)', fontStyle: 'italic' }}>
+                    Nenhum resultado retornado
+                  </p>
+                )}
+              </div>
+
+              <div style={{ flex: '1 1 300px', overflowX: 'auto' }}>
+                <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#2ecc71', marginBottom: '0.3rem' }}>
+                  &#10003; Resultado esperado ({expectedResult.rows.length} linhas)
+                </p>
+                {expectedResult.rows.length > 0 ? (
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+                    <thead>
+                      <tr>
+                        {expectedResult.columns.map((col, i) => (
+                          <th key={i} style={{
+                            padding: '0.25rem 0.5rem', border: '1px solid var(--ifm-color-emphasis-300)',
+                            background: '#eafaf1', textAlign: 'left', whiteSpace: 'nowrap',
+                          }}>{col}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {expectedResult.rows.map((row, ri) => (
+                        <tr key={ri}>
+                          {row.map((val, ci) => (
+                            <td key={ci} style={{
+                              padding: '0.2rem 0.5rem', border: '1px solid var(--ifm-color-emphasis-300)',
+                            }}>{val === null ? 'NULL' : String(val)}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p style={{ fontSize: '0.8rem', color: 'var(--ifm-color-emphasis-500)', fontStyle: 'italic' }}>
+                    Nenhum resultado esperado
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>

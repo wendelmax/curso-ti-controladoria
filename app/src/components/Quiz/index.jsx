@@ -69,6 +69,7 @@ export default function Quiz({ moduleId, title, questions }) {
     saveLocal(newResults);
     setResults(newResults);
     setSubmitted(true);
+    window.dispatchEvent(new CustomEvent('sidebar-progress-update'));
 
     if (user && supabase) {
       setSaving(true);
@@ -153,9 +154,21 @@ export default function Quiz({ moduleId, title, questions }) {
               );
             })}
             {submitted && (
-              <p style={{ fontSize: '0.85rem', marginTop: '0.4rem', color: isCorrect ? '#2ecc71' : '#e74c3c' }}>
-                {isCorrect ? 'Correto!' : `Resposta correta: ${String.fromCharCode(65 + q.correct)}`}
-              </p>
+              <div>
+                <p style={{ fontSize: '0.85rem', marginTop: '0.4rem', color: isCorrect ? '#2ecc71' : '#e74c3c' }}>
+                  {isCorrect ? 'Correto!' : `Resposta correta: ${String.fromCharCode(65 + q.correct)}`}
+                </p>
+                {q.explanation && (
+                  <p style={{
+                    fontSize: '0.82rem', marginTop: '0.3rem', padding: '0.5rem 0.75rem',
+                    background: 'var(--ifm-color-emphasis-0)', borderRadius: '6px',
+                    border: '1px solid var(--ifm-color-emphasis-200)',
+                    color: 'var(--ifm-color-emphasis-700)', lineHeight: 1.4,
+                  }}>
+                    &#128161; {q.explanation}
+                  </p>
+                )}
+              </div>
             )}
           </div>
         );

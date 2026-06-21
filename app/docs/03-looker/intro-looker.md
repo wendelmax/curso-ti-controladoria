@@ -30,19 +30,6 @@ Looker é uma plataforma de business intelligence e analytics da Google Cloud qu
 
 O diferencial central do Looker é que o usuário de negócio interage com *nomes de negócio* (ex.: "Receita Líquida", "Margem Bruta") e não com nomes de colunas físicas (`vlr_receita_bruta - vlr_deducoes`). A camada LookML traduz a terminologia financeira para SQL automaticamente.
 
-```
-Usuário                          Consumidor
-   |                                  ↑
-   ↓                                  |
-[Looks / Dashboards / Explorer]   [Métricas de negócio]
-   |                                  ↑
-   ↓                                  |
-[ LookML — Modelo Semântico ]     [Regras centralizadas]
-   |                                  ↑
-   ↓                                  |
-[ BigQuery / Banco de Dados ]    [Tabelas físicas]
-```
-
 ```mermaid
 flowchart LR
     subgraph Usuário

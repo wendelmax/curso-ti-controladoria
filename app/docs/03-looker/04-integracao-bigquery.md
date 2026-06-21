@@ -375,22 +375,6 @@ LIMIT 20;
 
 ## Pipeline de Dados: BigQuery → Looker
 
-```
-ERPs / Sistemas Legados
-        ↓
-   [Apache Airflow / Cloud Composer]
-        ↓
-   BigQuery - Raw Layer (dados brutos, imutáveis)
-        ↓
-   BigQuery - Staging Layer (limpeza, tipagem, dedup)
-        ↓
-   BigQuery - Analytics Layer (agregados, star schemas)
-        ↓
-   Looker - LookML Views (camada semântica)
-        ↓
-   Looker - Dashboards (consumo)
-```
-
 ```mermaid
 flowchart TD
     SRC[ERPs / Sistemas Legados]

@@ -1,60 +1,71 @@
-# Fundamentos do Tableau
+# Fundamentos do Tableau — O "ABC" para Começar
 
-## Dimensões vs Medidas
+> Imagine que você está organizando a DRE do mês. Você separa os dados em duas categorias: de um lado, os **rótulos** ("Receita", "Despesa", "Centro de Custo") — do outro, os **valores** (R$ 1,2 milhão, R$ 800 mil). No Tableau é a mesma lógica: existem as **dimensões** (rótulos azuis) e as **medidas** (números verdes). Entender essa diferença é 80% do caminho andado.
 
-No Tableau, todo campo é classificado automaticamente como **dimensão** ou **medida**:
+## Dimensões vs Medidas — A "Dualidade" que Tudo Explica
+
+No Tableau, todo campo ganha um rótulo de cor automaticamente:
 
 | Tipo | Cor | O que representa | Exemplos no Grupo Nova Era |
 |------|-----|------------------|---------------------------|
-| **Dimensão** | Azul | Dados categóricos, discretos | `ano`, `mes`, `centro_custo`, `conta_contabil`, `departamento` |
-| **Medida** | Verde | Dados numéricos, contínuos, agregáveis | `valor`, `quantidade`, `saldo` |
+| **Dimensão** | 🔵 Azul | Dados de texto, categoria, rótulo — coisas que *classificam* | `ano`, `mes`, `centro_custo`, `conta_contabil`, `departamento` |
+| **Medida** | 🟢 Verde | Dados numéricos — coisas que *se somam, se calculam* | `valor`, `quantidade`, `saldo` |
 
-**Regra prática:** dimensões criam cabeçalhos (linhas/colunas discretas); medidas criam eixos contínuos.
+:::tip Regra prática de ouro
+**Dimensão azul** → cria cabeçalhos (ex: "2024", "2025", "2026" como colunas separadas)
+**Medida verde** → cria eixos numéricos (ex: escala de R$ 0 a R$ 50 milhões)
+:::
 
 ```tableau
-// Uma dimensão no eixo Colunas cria rótulos separados
-// Uma medida no eixo Linhas cria um eixo de valor
-
+// Pense: dimensão no eixo X, medida no eixo Y
 // Colunas: [ano]
 // Linhas: SUM([valor])
-// Resultado: barras com total de valores por ano
+// Resultado: uma barrinha para cada ano com o valor total
 ```
 
-## Discreto vs Contínuo
+:::note Na prática da controladoria
+Sua conta contábil (ex: "3.01.001 — Receita de Vendas") é uma **dimensão** (classifica). O saldo dela (R$ 500 mil) é uma **medida** (numera). Sempre que você quiser "quebrar" um número por alguma categoria, arraste a categoria como dimensão.
+:::
+
+## Discreto vs Contínuo — A "Chave" que Muda Tudo
+
+Essa é uma das maiores fontes de confusão para iniciantes. Vamos descomplicar:
 
 | | Discreto (Azul) | Contínuo (Verde) |
 |---|---|---|
-| **Eixo** | Cabeçalhos categóricos | Eixo numérico com escala |
-| **Exemplo** | `ano` (2024, 2025, 2026) | `SUM(valor)` (R$ 0 a R$ 50M) |
-| **Gráfico** | Barras, linhas discretas | Linhas contínuas, área |
+| **Comportamento** | Cria "caixinhas" separadas | Cria uma "linha" contínua |
+| **Exemplo** | `ano` → 2024, 2025, 2026 (colunas separadas) | `SUM(valor)` → escala de R$ 0 a R$ 50M |
+| **Gráfico típico** | Barras, pizza, linhas "quebradas" entre pontos | Linha contínua, área, dispersão |
 
-**Dica:** Clique com botão direito em uma data e alterne entre `Discreto` e `Contínuo` para mudar o comportamento dinamicamente.
+:::tip Dica rápida
+Quer ver um ano por coluna? Deixe a data como **Discreto** (azul). Quer ver uma linha do tempo contínua de janeiro a dezembro? Mude para **Contínuo** (verde). O truque: clique com o **botão direito** no campo de data e alterne entre os dois modos.
+:::
 
 ```
-[ano] como Discreto → uma coluna por ano
-[ano] como Contínuo → uma linha do tempo contínua
+[ano] como Discreto → gráfico de barras: 2024, 2025, 2026 lado a lado
+[ano] como Contínuo → linha: janeiro 2024 até dezembro 2026
 ```
 
-## As Prateleiras (Shelves)
+## As Prateleiras (Shelves) — Onde Você "Monta" o Gráfico
 
-A interface do Tableau possui prateleiras fundamentais:
+Pense nas prateleiras como **gavetas organizadoras**: cada uma tem uma função específica. Você arrasta os campos para a gaveta certa e mágica acontece.
 
 ```mermaid
 block-beta
   columns 1
   block:Col
     columns 1
-    COLUNAS
+    COLUNAS (eixo X — o que vai na horizontal)
     ano
   end
   block:Lin
     columns 1
-    LINHAS
+    LINHAS (eixo Y — o que vai na vertical)
     SUM([valor])
   end
   block:Fil
     columns 1
-    FILTROS
+    FILTROS (o que você quer esconder ou focar)
     departamento = "Financeiro"
   end
   block:Mar
@@ -67,21 +78,27 @@ block-beta
 end
 ```
 
-### Colunas e Linhas
-Definem a estrutura do gráfico. Toda visualização começa aqui.
+### Colunas e Linhas — O "Esqueleto" do Gráfico
+Define a estrutura. **Toda** visualização começa aqui: o que vai no eixo X e no eixo Y.
 
-### Filtros
-Restringem os dados exibidos. Podem ser aplicados por contexto (planilha, painel ou fonte de dados).
+### Filtros — O "Peneirador"
+Restringe os dados que aparecem. Quer ver só 2025? Arraste `ano` para Filtros e selecione 2025.
 
-### Marcas (Marks)
+### Marcas (Marks) — O "Estilista"
 Controlam a aparência visual:
-- **Cor:** distingue categorias
-- **Tamanho:** enfatiza magnitude
-- **Rótulo:** exibe valores
-- **Detalhe:** adiciona granularidade sem alterar eixo
-- **Tooltip:** texto que aparece ao passar o mouse
+- **Cor:** diferencia categorias (ex: Receita azul, Despesa vermelha)
+- **Tamanho:** quanto maior o número, maior o ponto/barra
+- **Rótulo:** mostra o valor escrito no gráfico
+- **Detalhe:** adiciona mais informações sem mudar o eixo
+- **Tooltip:** o texto que aparece ao passar o mouse
 
-## Conectando ao Banco Grupo Nova Era
+:::tip Jargão traduzido
+**Tooltip** = "dica flutuante". É aquela caixinha de texto que surge quando você passa o mouse em cima de um elemento. No Tableau, você pode personalizar o que ela mostra.
+:::
+
+## Conectando ao Banco Grupo Nova Era — Mão na Massa
+
+Vamos conectar o Tableau aos dados que usaremos no curso inteiro. Siga os passos:
 
 ### Passo 1: Conexão
 
@@ -90,40 +107,49 @@ Conectar → PostgreSQL →
   Servidor: pg.gruponovaera.com.br
   Database: grupo_nova_era
   Schema: financeiro
-  Tabela: dre
+  Tabela: dre (é aqui que está nossa DRE)
 ```
 
-### Passo 2: Live vs Extract
+### Passo 2: Live ou Extract?
 
 ```
-Escolha "Live" para desenvolvimento.
-Ao final, crie um Extract (.hyper) para o dashboard.
+Use "Live" enquanto estiver aprendendo e testando.
+Quando terminar o dashboard, crie um Extract (.hyper) para ele ficar rápido.
 ```
 
-### Passo 3: Conhecer os dados
+### Passo 3: Conhecer os dados — A "Ficha Técnica"
 
-Use a aba **Dados** (Data Source) para explorar os campos disponíveis:
+Use a aba **Dados** (Data Source) do lado esquerdo para explorar os campos. É como folhear o sumário de um livro antes de ler:
 
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| `ano` | Inteiro | Ano fiscal (2024, 2025, 2026) |
-| `mes` | String | Mês abreviado (Jan, Fev, Mar...) |
+| Campo | Tipo (no Tableau) | O que significa |
+|-------|-------------------|-----------------|
+| `ano` | Inteiro | Ano fiscal (2024, 2025, 2026) — use como dimensão |
+| `mes` | String (texto) | Mês abreviado (Jan, Fev, Mar...) |
 | `data` | Data | Data completa da transação |
-| `conta_contabil` | String | Código da conta (ex: 3.01.001) |
-| `categoria_dre` | String | Grupo DRE (Receita, CMV, Despesas) |
-| `centro_custo` | String | Centro de custo (ex: CC-FIN) |
+| `conta_contabil` | String | Código da conta contábil (ex: 3.01.001) |
+| `categoria_dre` | String | Grupo da DRE (Receita, CMV, Despesas...) |
+| `centro_custo` | String | Centro de custo (ex: CC-FIN, CC-ADM) |
 | `departamento` | String | Departamento responsável |
-| `valor` | Decimal | Valor monetário em R$ |
+| `valor` | Decimal (número) | **Valor monetário em R$** — sua principal medida |
 | `tipo` | String | Débito ou Crédito |
 | `cliente_id` | Inteiro | ID do cliente (quando aplicável) |
 
+:::caution Atenção!
+Repare que `ano` aparece como **Inteiro**, não como Data. Isso significa que o Tableau vai tratar 2024, 2025, 2026 como rótulos separados, não como uma linha do tempo. Se quiser linha do tempo, use o campo `data`.
+:::
+
 ## Criando sua Primeira Visualização
 
-### Exemplo 1: Receita Total por Ano
+## Criando sua Primeira Visualização — "Hello World" do Tableau
 
-1. Arraste `ano` para **Colunas**
-2. Arraste `SUM(valor)` para **Linhas**
-3. (Opcional) Arraste `categoria_dre` para **Filtros**, selecione "Receita"
+### Exemplo 1: Receita Total por Ano (Gráfico de Barras)
+
+**Problema:** Quanto o Grupo Nova Era faturou em cada ano?
+
+Passo a passo:
+1. Arraste `ano` para **Colunas** → aparecem 3 colunas: 2024, 2025, 2026
+2. Arraste `SUM(valor)` para **Linhas** → nascem as barras!
+3. Arraste `categoria_dre` para **Filtros** e marque só "Receita"
 
 ```
 Colunas: [ano]
@@ -131,13 +157,16 @@ Linhas: SUM([valor])
 Filtros: [categoria_dre] = "Receita"
 ```
 
-Visualização: Um gráfico de barras mostrando receita total para 2024, 2025 e 2026.
+**Resultado:** Três barrinhas mostrando a receita total de cada ano. Em segundos, você vê se o faturamento cresceu ou caiu.
 
-### Exemplo 2: Despesas por Departamento (Gráfico de Barras Horizontal)
+### Exemplo 2: Despesas por Departamento (Barras Horizontais)
+
+**Problema:** Qual departamento gasta mais?
 
 1. Arraste `departamento` para **Linhas**
 2. Arraste `SUM(valor)` para **Colunas**
-3. Filtre por `categoria_dre` = "Despesa"
+3. Filtre: só `categoria_dre` = "Despesa"
+4. Arraste `departamento` para **Cor** (cada departamento de uma cor)
 
 ```
 Linhas: [departamento]
@@ -148,29 +177,39 @@ Cor: [departamento]
 
 ### Exemplo 3: Evolução Mensal da Receita (Linha do Tempo)
 
-1. Arraste `data` (como Contínuo) para **Colunas**
+**Problema:** Como a receita se comporta mês a mês?
+
+1. Arraste `data` (como **Contínuo** — verde) para **Colunas**
 2. Arraste `SUM(valor)` para **Linhas**
 3. Filtro: `categoria_dre` = "Receita"
-4. Arraste `ano` para **Cor** (para colorir cada ano)
+4. Arraste `ano` para **Cor** — cada ano ganha uma cor diferente
 
 ```
-Colunas: MONTH([data])  (contínuo)
+Colunas: MONTH([data]) (contínuo — cria uma linha do tempo)
 Linhas: SUM([valor])
 Filtros: [categoria_dre] = "Receita"
 Cor: [ano]
 ```
 
+**Resultado:** Você vê a sazonalidade — será que dezembro sempre vende mais?
+
 ### Exemplo 4: Top 10 Clientes por Receita
 
+**Problema:** Quem são os 10 clientes que mais trazem receita?
+
 1. Arraste `cliente_id` para **Linhas**
-2. Arraste `SUM(valor)` para **Colunas** (como medida, ordenado decrescente)
+2. Arraste `SUM(valor)` para **Colunas** (ordem decrescente)
 3. Clique em **Filtros → Top N → 10 por SUM(valor)**
 
 ```
 Linhas: [cliente_id]
 Colunas: SUM(valor)
-Filtro: Top 10 por SUM(valor)
+Filtro: Top 10 por SUM(valor) (descendente)
 ```
+
+:::tip Na prática da controladoria
+Este exemplo é clássico para relatórios de **concentração de receita**. Se os top 3 clientes representam 80% do faturamento, isso é um risco de negócio que você precisa reportar.
+:::
 
 ## Ordenação
 
@@ -217,5 +256,17 @@ Filtro em [valor]:
    Filtre por `departamento` e `valor`, mostrando apenas contas com `SUM(valor) > 50000`. Use ordenação descendente.
 
 ---
+
+## Resumo rápido — Fundamentos
+
+| Conceito | O que você precisa lembrar |
+|----------|---------------------------|
+| **Dimensão (azul)** | É categoria/rótulo — vai em Colunas ou Linhas para criar grupos |
+| **Medida (verde)** | É número — vai no centro para criar os valores |
+| **Discreto vs Contínuo** | Discreto = colunas separadas; Contínuo = eixo contínuo |
+| **Marcas** | Cor, tamanho, rótulo — é onde você "embeleza" o gráfico |
+| **Filtros** | Peneiram os dados — use para focar em períodos, categorias etc. |
+
+> 💡 **Lembrete de ouro:** Se o gráfico não apareceu, você provavelmente colocou uma medida onde deveria ser dimensão, ou vice-versa. Troque e veja a mágica acontecer.
 
 **Próximo: [Visualizações Financeiras](02-visualizacoes-financeiras.md)**

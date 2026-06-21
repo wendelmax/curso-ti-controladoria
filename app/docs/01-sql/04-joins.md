@@ -11,6 +11,12 @@ No Excel, para trazer o nome do cliente para uma planilha de vendas, você usava
 A vantagem do SQL? Você pode juntar 3, 5, 10 tabelas de uma vez — algo que no Excel viraria uma loucura de PROCVs aninhados.
 :::
 
+:::note Por que isso importa para você?
+Pense na última vez que você precisou de um relatório com: nome do cliente + valor da venda + centro de custo. No ERP, essas informações estão em tabelas diferentes. No Excel, você usaria PROCV para juntar tudo.
+
+JOIN é o PROCV do SQL — mas infinitamente mais rápido e sem o risco de arrastar a fórmula errada. Você vai usar JOIN em **todo relatório minimamente complexo** da controladoria.
+:::
+
 Na controladoria, raramente uma tabela contém toda a informação necessária. JOINs permitem **combinar dados de múltiplas tabelas** através de chaves relacionadas.
 
 ## INNER JOIN
@@ -148,6 +154,13 @@ WHERE fp.id_folha IS NULL;
 3. Para cada conta a receber, mostre o nome do cliente e dias até o vencimento
 4. Liste todos os clientes com suas respectivas faturas (inclusive clientes sem fatura)
 5. Monte uma query que retorne: empresa, conta contábil, valor e mês — para todas as contas de despesa (código começando com '5')
+
+## Para fixar
+
+- **INNER JOIN** = só traz quando tem correspondência (como PROCV com `FALSO`)
+- **LEFT JOIN** = mantém tudo da esquerda, mesmo sem match (como PROCV com `VERDADEIRO`)
+- **Sempre** use a cláusula **ON** para dizer como as tabelas se relacionam
+- Use **aliases** (`FROM faturamento f`) para não repetir nome de tabela
 
 import SqlExercicio from '@site/src/components/SqlExercicio'
 

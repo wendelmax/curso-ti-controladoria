@@ -28,7 +28,21 @@ Se você nunca programou, não se assuste. SQL é uma **linguagem de consulta**,
 ## Como Praticar
 
 Cada aula tem exemplos que você pode executar no **SQL Playground**.
+
+:::note Por que isso importa para você?
+Você já deve ter passado por isso: precisa de um relatório, pede para o TI, espera dois dias, e quando chega não é bem o que você queria. Com SQL, isso acaba. **Você vira o dono dos seus próprios relatórios.** Pode refinar, ajustar, repetir na hora que quiser — sem intermediários.
+
+Além disso, SQL é a linguagem mais usada em processos de auditoria, fechamento contábil e análise fiscal. Saber SQL no seu currículo é um diferencial enorme.
+:::
+
+Cada aula tem exemplos que você pode executar no **SQL Playground**.
 Clique em "SQL Playground" na barra de navegação superior ou abra diretamente.
+
+## Para fixar
+
+- SQL é uma **linguagem de consulta**, não de programação — você só precisa saber fazer perguntas
+- Todas as ferramentas modernas de BI e análise de dados usam SQL
+- Você vai praticar em um banco de dados real, com dados contábeis de verdade
 
 > **Dica:** Pressione `Ctrl+Enter` para executar queries no playground.
 > Use o explorador de esquema à esquerda para ver colunas das tabelas.

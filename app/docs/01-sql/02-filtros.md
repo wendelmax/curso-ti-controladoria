@@ -4,6 +4,12 @@
 WHERE é como o **filtro automático do Excel**. Você já deve ter selecionado uma coluna, clicado no ícone de funil e marcado só "SP" e "RJ". WHERE faz exatamente isso: `WHERE uf = 'SP'` = "me mostre só as linhas onde a UF é SP". A diferença é que no SQL você escreve o filtro em vez de clicar em caixinhas.
 :::
 
+:::note Por que isso importa para você?
+No dia a dia da controladoria, você raramente quer **todos** os dados de uma tabela. Quase sempre você quer filtrar: "contas a pagar em aberto", "clientes de SP", "lançamentos de janeiro", "funcionários com salário acima de R$ 10 mil". WHERE é a ferramenta que faz isso.
+
+Sem WHERE, você teria que baixar a tabela inteira e filtrar manualmente no Excel — exatamente o que estamos tentando evitar.
+:::
+
 ## WHERE — A cláusula essencial
 
 Filtra linhas que atendem a uma condição:
@@ -145,6 +151,14 @@ LIMIT 10;
 3. Encontre contas do plano que começam com '5' (despesas)
 4. Liste funcionários com salário entre 5.000 e 15.000 do Financeiro
 5. Mostre faturas com status 'aberto' e valor líquido > 50.000
+
+## Para fixar
+
+- **WHERE** = o filtro do SQL (como o ícone de funil no Excel)
+- Textos vão entre **aspas simples** (`'SP'`), números **não** precisam de aspas
+- Use **AND** para "e", **OR** para "ou", **IN** para listas, **BETWEEN** para intervalos
+- **LIKE** + `%` = busca por pedaço de texto (tipo "contém" no Excel)
+- **IS NULL** = procura células vazias
 
 import SqlExercicio from '@site/src/components/SqlExercicio'
 

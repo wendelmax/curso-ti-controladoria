@@ -4,6 +4,12 @@
 Pense no SQL como **pedir um relatório** para seu estagiário. SELECT é você dizendo "me mostre as colunas X, Y, Z". FROM é você dizendo "da pasta tal". ORDER BY é "ordenado por tal coluna". LIMIT é "só os 10 primeiros". O banco de dados é o estagiário que busca a informação para você.
 :::
 
+:::note Por que isso importa para você?
+Na prática da controladoria, você vai usar SELECT e FROM o tempo todo. Quer ver o plano de contas? SELECT + FROM. Quer conferir os lançamentos do dia? SELECT + FROM. Quer listar os fornecedores ativos? SELECT + FROM. É como **abrir uma pasta no Windows** — você precisa saber onde as coisas estão e querer ver o que tem dentro.
+
+Sem esses comandos, você não consegue fazer absolutamente nada no SQL. Por isso vamos começar por eles: são a porta de entrada.
+:::
+
 ## SELECT e FROM
 
 O comando mais básico do SQL: **selecionar** colunas **de** uma tabela.
@@ -127,6 +133,14 @@ import SqlExercicio from '@site/src/components/SqlExercicio'
   table="funcionarios"
   expectedSql="SELECT DISTINCT cargo FROM funcionarios"
 />
+
+## Para fixar
+
+- **SELECT** = escolha as colunas que você quer ver (como marcar colunas no Excel)
+- **FROM** = de qual tabela os dados vêm
+- **LIMIT** = quantas linhas você quer ver (seu controle de "só os primeiros")
+- **ORDER BY** = em que ordem mostrar
+- **DISTINCT** = sem repetições, tipo "resumir" no Excel
 
 Desafio extra (sem verificação automática — teste no SQL Playground geral):
 1. Selecione o código e descrição do plano de contas de nível 3 (analíticas)

@@ -8,6 +8,12 @@ Exemplo: "Quero os funcionários que ganham acima da média". Primeiro você cal
 CTE (WITH) é como **rascunhar a conta num papel à parte, dar um nome a ela, e depois usar esse nome na conta final**. Muito mais organizado do que aninhar tudo.
 :::
 
+:::note Por que isso importa para você?
+Na controladoria, você frequentemente precisa fazer perguntas em dois níveis: primeiro uma conta geral ("qual a média de vendas?") e depois "quem está acima dessa média?". Uma pergunta depende do resultado da outra.
+
+Subqueries e CTEs são exatamente isso: você resolve uma etapa de cada vez, e o resultado de uma vira entrada para a próxima. Como montar uma demonstração financeira passo a passo.
+:::
+
 ## Subqueries (Subconsultas)
 
 Uma consulta dentro de outra consulta. Pode estar no `WHERE`, `FROM` ou `SELECT`.
@@ -203,6 +209,12 @@ JOIN cte2 ON ...;
 3. Calcule o % de cada despesa sobre a receita total do mês (use CTEs)
 4. Mostre clientes que nunca faturaram (use LEFT JOIN + IS NULL)
 5. Crie uma query que retorne mês, receita total, custo total e margem bruta (%)
+
+## Para fixar
+
+- **Subquery** = uma consulta dentro de outra (resolve aninhado, como fórmula composta no Excel)
+- **CTE (WITH)** = mesma ideia, mas mais organizada: você dá nome a cada etapa
+- CTEs são sempre preferíveis para queries complexas — mais fáceis de ler e dar manutenção
 
 import SqlExercicio from '@site/src/components/SqlExercicio'
 

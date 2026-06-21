@@ -1,31 +1,49 @@
 # Dashboards Financeiros no Looker
 
+> **Imagine que...** você tem uma parede cheia de painéis no escritório. Cada painel mostra um indicador diferente: Receita do mês, Margem EBITDA, DRE por centro de custo. No Looker, essa parede é o **dashboard** — e você monta cada "painel" (chamado de **tile**) arrastando e soltando, sem programar nada.
+
 ## Tipos de Dashboards no Looker
 
-| Tipo | Descrição | Uso em Controladoria |
+| Tipo | Tradução | Uso em Controladoria |
 |---|---|---|
-| **User Dashboard** | Criado no Explore, arrasta-se tiles | Análise ad-hoc, prototipação |
-| **LookML Dashboard** | Definido em código YAML, versionado em Git | Dashboards oficiais (DRE, Balanço) |
-| **Dashboard do Looker Studio** | Importado do Google Looker Studio | Relatórios regulatórios padronizados |
+| **User Dashboard** | "Rascunho rápido" — feito no Explore arrastando tiles | Análise ad-hoc, testes, protótipos |
+| **LookML Dashboard** | "Relatório oficial" — definido em código, versionado no Git | Dashboards oficiais (DRE, Balanço, Fluxo de Caixa) |
+| **Dashboard do Looker Studio** | "Importado de outra ferramenta" — vindo do Google Looker Studio | Relatórios regulatórios padronizados |
 
-## Criando Looks
+:::tip Qual usar quando?
+- Precisa de uma análise rápida para a reunião de amanhã? → **User Dashboard**
+- É o DRE oficial que vai para o CFO todo mês? → **LookML Dashboard** (versionado, auditável, ninguém mexe sem aprovação)
+- É um relatório para órgão regulador? → **Looker Studio**
+:::
 
-Um **Look** é uma consulta salva que pode ser reutilizada em múltiplos dashboards.
+## Criando Looks — "Salvando uma Consulta para Reusar"
+
+:::note Pense como...
+Um **Look** é como salvar um filtro avançado no Excel para usar depois. Você configura a consulta uma vez (quais colunas, quais filtros, qual ordenação), salva com um nome, e reusa em vários dashboards. Se precisar ajustar, muda em um lugar só.
+:::
+
+### Passo a passo: criando seu primeiro Look
 
 ```
-No Explore, configure:
-  - Dimensões: data.month, plano_contas.nome_conta
-  - Medidas: valor_realizado, valor_orcado, percentual_variacao
-  - Filtros: data.year = 2026, tipo_conta = "Receita","Despesa"
-  - Ordenação: data.month asc
-  - Limite: 500 linhas
+1. No Explore, selecione:
+   - Dimensões: data.month, plano_contas.nome_conta
+   - Medidas: valor_realizado, valor_orcado, percentual_variacao
+   - Filtros: data.year = 2026, tipo_conta = "Receita","Despesa"
+   - Ordenação: data.month (crescente)
+   - Limite: 500 linhas
 
-Clique em "Save" -> "Save as a Look"
-  Nome: "[DRE] Realizado vs Orçado - Mensal"
-  Pasta: "Controladoria / DRE / Looks"
+2. Clique em "Save" → "Save as a Look"
+
+3. Dê um nome:
+   "[DRE] Realizado vs Orçado - Mensal"
+
+4. Escolha a pasta:
+   "Controladoria / DRE / Looks"
+
+5. Pronto! Agora você pode inserir este Look em qualquer dashboard
 ```
 
-### Exemplo Look: DRE Sintética
+### Exemplo de resultado — DRE Sintética
 
 | Mês | Receita Líquida | Despesas | Resultado | % Margem |
 |---|---|---|---|---|
@@ -34,7 +52,11 @@ Clique em "Save" -> "Save as a Look"
 | Mar/2026 | R$ 13.200.000 | R$ 10.100.000 | R$ 3.100.000 | 23,5% |
 | **Q1** | **R$ 37.500.000** | **R$ 29.400.000** | **R$ 8.100.000** | **21,6%** |
 
-## Criando um Dashboard
+## Criando um Dashboard — Montando seu Painel de Controle
+
+:::tip Traduzindo
+Um `element` no LookML é como dizer: "no dashboard, coloque um **quadro** mostrando a Margem EBITDA, do tamanho 2x1, posicionado no canto superior esquerdo".
+:::
 
 ### Dashboard LookML (Versionado)
 
@@ -124,17 +146,18 @@ dashboard: dre_gerencial_dashboard {
 }
 ```
 
-## Usando Merge Results
+## Usando Merge Results — Juntando Dados de Diferentes Fontes
 
-**Merge Results** permite combinar dados de explores diferentes em um mesmo tile — essencial para análises cruzadas (ex.: DRE + Balanço).
+:::note Pense como...
+**Merge Results** é como fazer um **PROCV** entre duas planilhas diferentes. Você tem dados de lucratividade em uma tabela (DRE) e dados de liquidez em outra (Balanço), e quer juntar os dois no mesmo gráfico.
+:::
 
 ```
 Exemplo: Margem Líquida + Liquidez Corrente no mesmo gráfico
 
-Explore A: dre_resultado  -> data.month, margem_liquida
-Explore B: balanco_view  -> data.month, indice_liquidez_corrente
+Explore A: dre_resultado  → data.month, margem_liquida
+Explore B: balanco_view  → data.month, indice_liquidez_corrente
 
-Resultado merge:
 | Mês    | Margem Líquida | Liquidez Corrente |
 |--------|----------------|-------------------|
 | Jan    | 12,3%          | 1,85              |
@@ -153,12 +176,19 @@ element: margem_vs_liquidez {
 }
 ```
 
-## Agendamento e Entrega
+:::tip Por que isso importa para você?
+Com Merge Results, você pode criar um dashboard que **cruza indicadores de DRE e Balanço** no mesmo gráfico. Por exemplo: será que quando a margem cai, a liquidez também cai? Visualizar lado a lado revela correlações que tabelas separadas escondem.
+:::
 
-### Look Scheduled Plans
+## Agendamento e Entrega — "O Relatório Chega Sozinho no Seu Email"
+
+:::note O problema que resolve
+Todo mês você tem que: abrir o sistema, rodar a DRE, exportar para PDF, anexar no email, digitar os destinatários, clicar em enviar. Com o agendamento do Looker, **isso tudo acontece automaticamente** no 5º dia útil às 8h.
+:::
+
+### Look Scheduled Plans — Configurando a entrega automática
 
 ```yaml
-# Configuração de entrega programada
 scheduled_plan:
   name: "DRE Mensal para Diretoria"
   run_as: "sistema_controladoria"
@@ -173,18 +203,17 @@ scheduled_plan:
     pdf_paper_size: A4
 
   schedule:
-    day: 5                    # Dia útil do mês
+    day: 5                    # 5º dia útil do mês
     frequency: monthly
     at: "08:00"
     timezone: "America/Sao_Paulo"
 ```
 
-### Alertas para Thresholds
+### Alertas para Thresholds — "Looker te avisa quando algo está errado"
 
 Alertas disparam notificações quando métricas ultrapassam limites definidos.
 
 ```json
-// Alerta de desvio orçamentário no Looker API
 {
   "alert": {
     "title": "Desvio Orçamentário Crítico",
@@ -208,16 +237,22 @@ Alertas disparam notificações quando métricas ultrapassam limites definidos.
 }
 ```
 
-## Permissões por Perfil
+:::warning Jargão explicado
+- **Threshold** = "limite" ou "gatilho". Neste exemplo: "se a variação vs. orçamento passar de 15% para cima, me avise".
+- **Scheduled Plan** = "programação de entrega". Tipo agendar um email automático.
+- **Look ID** = número de identificação do Look. É como o protocolo de um documento.
+:::
+
+## Permissões por Perfil — Quem vê o quê
 
 ### Modelo de Acesso Baseado em Função
 
-| Perfil | Acesso | Restrições |
+| Perfil | Acesso | O que NÃO pode ver |
 |---|---|---|
-| **CFO** | Todos os dashboards e explores | — |
-| **Controller** | DRE, Balanço, Fluxo de Caixa — consolidado | Sem acesso a dados de remuneração |
-| **Analista de Custos** | Apenas centros de custo do seu departamento | Filtro automático no centro de custo |
-| **Auditoria** | Acesso read-only a todos os dados | Sem permissão de exportar |
+| **CFO** | Todos os dashboards e explores | — (vê tudo) |
+| **Controller** | DRE, Balanço, Fluxo de Caixa consolidado | Dados de remuneração |
+| **Analista de Custos** | Apenas centros de custo do seu departamento | Dados de outros departamentos |
+| **Auditoria** | Acesso só de leitura a todos os dados | Não pode exportar nem alterar |
 
 ### Configuração de Permissão no Looker
 
@@ -225,7 +260,6 @@ Alertas disparam notificações quando métricas ultrapassam limites definidos.
 explore: dre_resultado {
   label: "DRE"
 
-  # Acesso irrestrito para CFO e Controller
   access_filter: {
     field: centros_custo.id_centro_custo
     user_attribute: centro_custo_permitido
@@ -234,16 +268,18 @@ explore: dre_resultado {
 ```
 
 ```yaml
-# Atributos de usuário definidos na admin do Looker
 user_attribute:
   name: centro_custo_permitido
   type: string
   default_value: "*"
 
-# Para analistas de departamento:
-# Analista de Custos -> Adm: centro_custo_permitido = "1001,1002,1003"
-# Analista de Folha  -> Adm: centro_custo_permitido = "2001,2002"
+# Analista de Custos → centro_custo_permitido = "1001,1002,1003"
+# Analista de Folha  → centro_custo_permitido = "2001,2002"
 ```
+
+:::note Como funciona na prática
+Se o analista de Custos entra no dashboard, ele **só vê os centros de custo 1001, 1002, 1003**. O filtro é aplicado automaticamente — ele nem percebe que existem outros centros de custo. Zero risco de vazamento de informação.
+:::
 
 ### Exemplo de Dashboard Restrito por Departamento
 
@@ -265,13 +301,19 @@ dashboard: despesas_departamentais {
 }
 ```
 
-## Boas Práticas
+## Boas Práticas — Regras de Ouro
 
-1. **Dashboards oficiais em LookML**: versionados, revisados em PR, sem alteração manual
-2. **Looks reutilizáveis**: crie looks de consultas frequentes e referencie-os nos dashboards
-3. **Performance**: evite mais de 10 tiles por dashboard; use agregados pré-calculados
-4. **Hierarquia de pastas**: Controladoria / `{Ano}` / `{Tipo_de_Relatorio}`
-5. **Programação mensal**: entregue DRE no 5º dia útil, Balanço no 10º dia útil
+1. **Dashboards oficiais em LookML**: versionados no Git, ninguém mexe sem aprovação (PR)
+2. **Looks reutilizáveis**: salvou uma consulta útil? Vire um Look. Depois reusa em 5 dashboards sem refazer
+3. **Performance**: no máximo 10 tiles por dashboard. Mais que isso, vale criar um agregado pré-calculado
+4. **Organização de pastas**: `Controladoria / {Ano} / {Tipo_de_Relatorio}`
+5. **Programação mensal**: DRE no 5º dia útil, Balanço no 10º dia útil — automático, sem você lembrar
+
+## Resumo: 3 pontos para levar para casa
+
+1. **Dashboards são seus painéis de controle** — você monta arrastando tiles com indicadores financeiros (Lucro, Margem, EBITDA) sem programar.
+2. **Looks e Agendamentos automatizam sua rotina**: salve consultas frequentes como Looks, agende a DRE para chegar por email no 5º dia útil, e configure alertas para desvios orçamentários.
+3. **Permissões garantem que cada um vê só o que precisa** — o analista de custos vê apenas seus centros de custo; o CFO vê o consolidado. Zero risco de dados errados para a pessoa errada.
 
 ---
 

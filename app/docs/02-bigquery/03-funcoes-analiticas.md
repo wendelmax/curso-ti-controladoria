@@ -1,20 +1,40 @@
 # Funções Analíticas Avançadas no BigQuery
 
-## WINDOW Functions
+Imagine que você está montando um relatório financeiro no Excel. Você quer:
+- O saldo acumulado até cada dia (como um "soma acumulada")
+- Comparar a receita deste mês com a do mês passado
+- Saber qual cliente está no topo do ranking
 
-Funções de janela são essenciais para relatórios financeiros, como saldos acumulados, comparações período-a-período e rankeamentos.
+No Excel, você faria fórmulas do tipo `=SOMA(A$1:A1)` ou `=B2-B1`. As funções analíticas (também chamadas de **window functions** ou **funções de janela**) fazem exatamente isso — mas dentro do SQL.
+
+## Por que isso importa para você?
+
+Na controladoria, você vive fazendo este tipo de análise:
+- "Qual foi o saldo de caixa acumulado no mês?"
+- "A receita deste mês cresceu ou caiu em relação ao mês passado?"
+- "Quais são os 5 maiores fornecedores?"
+
+Sem funções analíticas, você precisaria de subconsultas complicadas ou planilhas auxiliares. Com elas, uma única consulta SQL resolve.
+
+:::tip "Janela" = visão limitada dos dados
+O termo "janela" (window) significa que a função opera sobre um **subconjunto** dos dados, não a tabela inteira. Imagine que você está olhando por uma janela que só mostra alguns registros por vez — mas você pode mover essa janela.
+:::
 
 ### Estrutura Básica
 
 ```sql
 função() OVER (
-  PARTITION BY coluna1, coluna2
-  ORDER BY coluna3
-  [ROWS | RANGE BETWEEN ... AND ...]
+  PARTITION BY coluna1, coluna2   -- "grupo" (ex: por empresa)
+  ORDER BY coluna3                 -- "ordem" (ex: por data)
+  [ROWS | RANGE BETWEEN ... AND ...] -- "tamanho da janela"
 )
 ```
 
-## 1. ROW_NUMBER — Sequenciamento de Lançamentos
+Traduzindo: "Para cada grupo (empresa), ordenado por data, calcule algo considerando as linhas X até Y."
+
+## 1. ROW_NUMBER — Numerando Lançamentos
+
+Útil para identificar duplicatas ou criar uma sequência dentro de cada grupo.
 
 ```sql
 -- Numerar lançamentos por empresa em ordem cronológica
@@ -29,7 +49,16 @@ SELECT
 FROM `projeto.contabilidade.razao`;
 ```
 
-## 2. LAG e LEAD — Comparação entre Períodos
+:::note Na prática da controladoria
+Use `ROW_NUMBER` para:
+- Identificar o primeiro e último lançamento de cada dia
+- Detectar duplicatas (quando `ROW_NUMBER > 1` com os mesmos dados)
+- Criar números de sequência para conciliação bancária
+:::
+
+## 2. LAG e LEAD — Comparando Períodos
+
+**LAG** (atrasado) olha para **trás**. **LEAD** (adiantado) olha para **frente**.
 
 ```sql
 -- Variação mensal de receita (comparação com mês anterior)
@@ -64,7 +93,13 @@ SELECT
 FROM `projeto.financeiro.parcelas`;
 ```
 
+:::tip Como LAG e LEAD funcionam na prática
+Pense em LAG como "olhar para a linha de cima" e LEAD como "olhar para a linha de baixo". Se você ordenou por mês, LAG(receita) pega a receita do mês anterior. Se você está em janeiro, LAG mostra dezembro. Simples assim.
+:::
+
 ## 3. SUM OVER — Saldo Acumulado (Running Total)
+
+A função mais útil para fluxo de caixa: o saldo até o momento.
 
 ```sql
 -- Saldo de caixa acumulado por dia
@@ -83,7 +118,13 @@ FROM `projeto.financeiro.caixa`
 ORDER BY data_movimento, hora_movimento;
 ```
 
-## 4. ARRAY_AGG — Agregação em Lista para Relatórios
+:::note Traduzindo
+`ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` é o jeito formal de dizer: "Desde o início dos dados até a linha atual". É o equivalente a `=SOMA(A$1:A1)` no Excel.
+:::
+
+## 4. ARRAY_AGG — Agrupando em Listas para Relatórios
+
+Em vez de ter várias linhas, você junta tudo em uma única lista.
 
 ```sql
 -- Agrupar lançamentos do dia em um array (relatório de diário)
@@ -108,7 +149,9 @@ FROM `projeto.contabilidade.lancamentos`
 GROUP BY mes;
 ```
 
-## 5. STRING_AGG — Concatenação de Texto para Notas Fiscais
+## 5. STRING_AGG — Concatenando Texto
+
+Junta textos em uma única célula — ótimo para listar itens de nota fiscal.
 
 ```sql
 -- Concatenar itens de nota fiscal em uma única linha
@@ -120,7 +163,7 @@ FROM `projeto.fiscal.itens_nf`
 GROUP BY nota_fiscal_id;
 ```
 
-## 6. Funções de Data e Timestamp para Fechamento
+## 6. Funções de Data para Fechamento Contábil
 
 ```sql
 -- DATE_TRUNC: agrupar por mês/trimestre/ano
@@ -151,7 +194,7 @@ ORDER BY mes_label;
 SELECT
   LAST_DAY(data_lancamento) AS ultimo_dia_mes,
   SUM(valor) AS total
-FROM `projeto.contabilidade.lanzamentos`
+FROM `projeto.contabilidade.lancamentos`
 GROUP BY ultimo_dia_mes;
 ```
 
@@ -175,7 +218,7 @@ SELECT
 FROM `projeto.financeiro.saldos_diarios`;
 ```
 
-## 8. NTH_VALUE — k-ésimo Valor (Ex.: 3º maior gasto)
+## 8. NTH_VALUE — O 3º Maior Gasto
 
 ```sql
 SELECT
@@ -201,6 +244,15 @@ FROM `projeto.financeiro.faturamento_cliente`
 GROUP BY cliente_id;
 ```
 
+:::note NTILE(4) = 4 grupos (quartis)
+- Quartil 1 = top 25% (maiores clientes)
+- Quartil 2 = 25% seguintes
+- Quartil 3 = 25% seguintes
+- Quartil 4 = 25% inferiores (menores clientes)
+
+Útil para classificar clientes por porte (A, B, C, D) ou segmentar fornecedores por volume de compras.
+:::
+
 ## 10. Funções Condicionais para Análise Fiscal
 
 ```sql
@@ -225,16 +277,16 @@ SELECT
 FROM `projeto.contabilidade.balanco_comparativo`;
 ```
 
-## Resumo
+## Resumo — Guia Rápido
 
-| Função | Uso em Controllership |
-|--------|----------------------|
-| `ROW_NUMBER` | Numerar lançamentos, identificar duplicatas |
-| `LAG` / `LEAD` | Comparação mês a mês, parcelas futuras |
-| `SUM() OVER` | Saldo acumulado, fluxo de caixa |
-| `ARRAY_AGG` | Relatórios agrupados por dia/mês |
-| `STRING_AGG` | Concatenação de itens fiscais |
-| `DATE_TRUNC` | Fechamento mensal/trimestral |
-| `DATE_DIFF` | Prazo médio, aging |
-| `NTILE` | Classificação de clientes por porte |
-| `FIRST_VALUE` / `LAST_VALUE` | Saldo inicial/final do período |
+| Função | Uso em Controladoria | Tradução |
+|---|---|---|
+| `ROW_NUMBER` | Numerar lançamentos, detectar duplicatas | "Qual é o número deste dentro do grupo?" |
+| `LAG` / `LEAD` | Comparação mês a mês, parcelas futuras | "O que veio antes / depois?" |
+| `SUM() OVER` | Saldo acumulado, fluxo de caixa | "Soma até aqui" |
+| `ARRAY_AGG` | Relatórios agrupados por dia/mês | "Junta tudo numa lista" |
+| `STRING_AGG` | Concatenação de itens fiscais | "Junta textos" |
+| `DATE_TRUNC` | Fechamento mensal/trimestral | "Arredonda para mês" |
+| `DATE_DIFF` | Prazo médio, aging de contas | "Diferença entre datas" |
+| `NTILE` | Classificação de clientes por porte | "Divide em grupos iguais" |
+| `FIRST_VALUE` / `LAST_VALUE` | Saldo inicial/final do período | "Primeiro e último do grupo" |

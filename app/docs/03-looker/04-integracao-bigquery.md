@@ -1,10 +1,19 @@
 # Integração Looker + BigQuery
 
-## Conexão Looker ↔ BigQuery
+> **Imagine que...** seu escritório de contabilidade tem uma "caixa de arquivos" gigante (BigQuery) onde ficam todos os lançamentos, plano de contas, centros de custo — anos de dados. O Looker é uma "mesa de trabalho" que se conecta a essa caixa e te deixa montar relatórios sem precisar revirar a caixa manualmente. Esta página mostra como essa conexão é feita.
 
-### Configuração da Conexão
+:::warning Isso não é para você fazer
+As configurações desta página são **técnicas e executadas pelo engenheiro de dados ou analista de BI**. Você não precisa configurar nada disso. Mas entender o que acontece "por baixo dos panos" ajuda a:
+- Saber pedir a configuração certa
+- Entender por que algumas consultas são lentas (ou caras)
+- Não se assustar quando ouvir "Service Account", "PDT", "Cache" na reunião
+:::
 
-No painel administrativo do Looker, em **Admin > Connections**:
+## Conexão Looker ↔ BigQuery — "O Canal de Comunicação"
+
+### Como a conexão é configurada
+
+No painel administrativo do Looker, em **Admin > Connections**, o analista de BI preenche estas informações:
 
 ```yaml
 Connection Settings:
@@ -18,12 +27,20 @@ Connection Settings:
   Temporary GCS Bucket:    looker_temp_staging
   Max Connections:         10
   Total Max Connections:   20
-
-# Dataset padrão
   Database:                controladoria
 ```
 
-### Service Account com Escopo Mínimo
+:::tip Jargão explicado
+- **Service Account** = uma "identidade digital" que o Looker usa para acessar o BigQuery. É como um crachá de funcionário: identifica quem está fazendo a consulta.
+- **Dialect** = "dialeto". BigQuery fala um SQL específico. O Looker precisa saber qual "idioma" usar para se comunicar.
+- **GCS Bucket** = uma "pasta temporária" no Google Cloud Storage usada para transferir dados grandes entre Looker e BigQuery.
+:::
+
+### Service Account com Escopo Mínimo — "O Mínimo de Acesso Necessário"
+
+:::caution Princípio de segurança
+A Service Account do Looker deve ter **apenas as permissões necessárias** para fazer o trabalho — nem mais, nem menos. É como dar a chave só da sala de arquivos, não do prédio inteiro.
+:::
 
 ```json
 {
@@ -43,16 +60,17 @@ Connection Settings:
 ### Permissões no BigQuery
 
 ```sql
--- Permissões mínimas para a service account do Looker
+-- Permissões para ler dados financeiros
 GRANT `roles/bigquery.dataViewer`
 ON DATASET controladoria
 TO 'serviceAccount:looker-sa@projeto-controladoria.iam.gserviceaccount.com';
 
+-- Permissão para executar consultas
 GRANT `roles/bigquery.jobUser`
 ON PROJECT 'projeto-controladoria'
 TO 'serviceAccount:looker-sa@projeto-controladoria.iam.gserviceaccount.com';
 
--- Para criar PDTs (tabelas derivadas persistentes)
+-- Permissão para criar tabelas temporárias (PDTs)
 GRANT `roles/bigquery.dataEditor`
 ON DATASET controladoria_looker_scratch
 TO 'serviceAccount:looker-sa@projeto-controladoria.iam.gserviceaccount.com';
@@ -62,9 +80,11 @@ ON DATASET controladoria_pdts
 TO 'serviceAccount:looker-sa@projeto-controladoria.iam.gserviceaccount.com';
 ```
 
-## Persistent Derived Tables (PDTs)
+## Persistent Derived Tables (PDTs) — "Rascunhos que viram Tabelas Permanentes"
 
-PDTs são tabelas temporárias materializadas no BigQuery para acelerar consultas recorrentes.
+:::note Pense como...
+PDTs são como **resumos executivos** que você prepara com antecedência. Em vez de reler o relatório completo de 500 páginas toda vez que alguém pergunta "qual a Receita do mês?", você deixa um resumo de 1 página já calculado. O Looker faz a mesma coisa: pré-calcula consultas pesadas e guarda o resultado pronto para consultas futuras.
+:::
 
 ### PDT para DRE Agregada
 
@@ -121,7 +141,11 @@ view: dre_agregada_pdt {
 }
 ```
 
-### Datagroups para Controle de Atualização
+:::tip Por que isso importa para você?
+Sua DRE mensal consulta milhões de linhas. Sem PDT, cada clique no dashboard leva 30 segundos. Com PDT, a consulta já está pré-calculada e o resultado aparece em **2 segundos**. A diferença é sentida no dia a dia.
+:::
+
+### Datagroups para Controle de Atualização — "Quando a PDT é recalculada"
 
 ```lookml
 datagroup: dre_snapshot_datagroup {
@@ -135,6 +159,13 @@ datagroup: dre_snapshot_datagroup {
   description: "Recalcula PDT da DRE quando há nova carga de lançamentos"
 }
 ```
+
+:::note O que isso faz na prática
+- Uma PDT da DRE é calculada **automaticamente sempre que o ERP carrega novos lançamentos**
+- Se não houver novos dados, a PDT não é recalculada (economiza processamento)
+- Se ninguém consultar por 24h, o Looker pode usar o resultado antigo
+- **Você não precisa fazer nada** — o sistema decide sozinho quando atualizar
+:::
 
 ### PDT para Fechamento Mensal
 
@@ -191,9 +222,13 @@ view: fechamento_mensal_pdt {
 }
 ```
 
-## Aggregate Awareness
+## Aggregate Awareness — "Looker Escolhe o Caminho Mais Rápido"
 
-**Aggregate Awareness** permite que o Looker decida automaticamente se consulta a tabela agregada (rápida) ou a tabela detalhada (completa), baseado nos campos solicitados pelo usuário.
+**Aggregate Awareness** é a inteligência do Looker para decidir se consulta a tabela resumida (rápida, mas menos detalhada) ou a tabela completa (lenta, mas com todos os detalhes).
+
+:::tip Traduzindo
+É como um GPS que escolhe entre a estrada mais rápida (tabela agregada) e a rua mais completa (tabela detalhada), dependendo de onde você quer chegar.
+:::
 
 ```lookml
 explore: dre_resultado {
@@ -226,25 +261,31 @@ explore: dre_resultado {
 ### Como o Aggregate Awareness Funciona
 
 ```
-Usuário consulta:     data.month, nome_conta, SUM(valor)
+Você consulta:     data.month, nome_conta, SUM(valor)
 
-Looker verifica:
-  ✔ dre_mensal:     month + nivel_1 = match parcial (precisa de nome_conta)
-  ✔ dre_diaria:     date + nome_conta = match total
+Looker verifica se existe uma tabela agregada que atenda:
+  ✔ dre_mensal:     month + nivel_1 = útil mas não tem nome_conta
+  ✔ dre_diaria:     date + nome_conta = tem tudo que precisa!
 
-Resultado: consulta automaticamente dre_diaria
-e agrega para o nível mês (sem tocar na tabela fato de 200M linhas)
+Resultado: consulta a dre_diaria (mais rápida)
+e agrupa para o nível mês — sem tocar na tabela original de 200 milhões de linhas
 ```
 
-## Estratégias de Cache
+:::note Por que isso importa para você?
+Você não precisa fazer nada. O Looker **decide sozinho** qual tabela consultar para te dar a resposta mais rápida possível. Você só vê o resultado — a mágica acontece nos bastidores.
+:::
+
+## Estratégias de Cache — "Guardando Resultados para Não Recalcular"
+
+:::note Pense como...
+Cache é como **deixar a DRE do mês passado na gaveta**: se alguém perguntar de novo, você tira da gaveta em vez de refazer tudo. O Looker faz o mesmo: guarda resultados de consultas recentes para não precisar consultar o BigQuery toda vez.
+:::
 
 ### Configuração Global de Cache
 
 ```yaml
-# No model file
 max_cache_age: "6 hours"
 
-# Datagroups por tema
 datagroup: dre_datagroup {
   max_cache_age: "1 hour"
   sql_trigger:
@@ -265,34 +306,23 @@ datagroup: balanco_datagroup {
 
 ### Políticas por Tipo de Dado
 
-| Tipo de Dado | Estratégia | TTL |
+| Tipo de Dado | Quando atualiza | Quanto tempo fica em cache |
 |---|---|---|
-| DRE mensal (consolidado) | PDT recalculada após carga | 24h |
-| Balanço patrimonial | Cache longo (dados estáveis) | 12h |
-| Lançamentos diários | Cache curto (dados frescos) | 1h |
-| Histórico de anos anteriores | Cache infinito (não muda) | 30d |
-| Câmbio / índices | Consulta em tempo real | Sem cache |
+| DRE mensal (consolidado) | Após carga do ERP | 24h |
+| Balanço patrimonial | Dados estáveis, atualizações raras | 12h |
+| Lançamentos diários | Dados frescos, atualização frequente | 1h |
+| Histórico de anos anteriores | Nunca muda | 30 dias |
+| Câmbio / índices | Em tempo real | Sem cache (sempre atual) |
 
-### Persistência por Explore
-
-```lookml
-explore: dre_historico {
-  label: "DRE Histórico (2020-2024)"
-  persist_for: "30 days"
-  sql_trigger_value: "historico_estatico" ;;
-}
-
-explore: dre_diario {
-  label: "DRE Diário"
-  persist_for: "1 hour"
-}
-```
-
-## Performance Optimization
+## Performance Optimization — "Fazendo o Looker Voar"
 
 ### Boas Práticas para Consultas Financeiras
 
-1. **Sempre filtre por data**: BigQuery cobra por bytes processados; sem filtro de data você pode ler TB de dados
+:::warning Isso é importante!
+BigQuery cobra por **volume de dados processados**, não por tempo de execução. Uma consulta mal feita pode custar dezenas de reais. Uma consulta bem feita custa centavos.
+:::
+
+1. **Sempre filtre por data** — sem filtro de data, você pode ler terabytes de dados
 
 ```lookml
 explore: lancamentos_contabeis {
@@ -314,25 +344,24 @@ explore: lancamentos_contabeis {
 }
 ```
 
-3. **Prefira PARTITION BY em PDTs**
+3. **Prefira PARTITION BY em PDTs** — divide a tabela em pedaços por ano/mês
 
 ```sql
--- Use partições no BigQuery
 CREATE TABLE controladoria_pdts.dre_mensal
 PARTITION BY ano
 CLUSTER BY grupo_dre, mes
 AS SELECT ...;
 ```
 
-4. **Evite `SELECT *` em derived tables**
+4. **Evite `SELECT *`** — peça só as colunas que você precisa
 
 ```lookml
--- Ruim: lê todas as colunas
+-- Ruim: lê todas as colunas (20 colunas desnecessárias)
 derived_table: {
   sql: SELECT * FROM lancamentos_contabeis ;;
 }
 
--- Bom: lê apenas as colunas necessárias
+-- Bom: lê apenas o necessário
 derived_table: {
   sql:
     SELECT id_conta, data_contabil, SUM(valor) as total
@@ -342,24 +371,9 @@ derived_table: {
 }
 ```
 
-5. **Use Limites e Agregações**
-
-```lookml
-measure: total_receita_bruta {
-  type: sum
-  sql: ${TABLE}.valor ;;
-  # Sempre que possível, agregue no SQL
-  # em vez de puxar linhas detalhadas
-}
-
-# Para grandes volumes, prefira PDTs
-# em vez de consultar a tabela fato diretamente
-```
-
-### Monitoramento de Performance
+### Monitoramento de Performance — "De Olho no Que Está Lento"
 
 ```sql
--- Query de diagnóstico no BigQuery
 SELECT
   query,
   total_bytes_processed / 1e9 AS GB_processados,
@@ -373,29 +387,42 @@ ORDER BY total_bytes_processed DESC
 LIMIT 20;
 ```
 
-## Pipeline de Dados: BigQuery → Looker
+## Pipeline de Dados: BigQuery → Looker — "O Caminho dos Dados"
 
 ```mermaid
 flowchart TD
-    SRC[ERPs / Sistemas Legados]
-    ORCH[Apache Airflow / Cloud Composer]
-    RAW[BigQuery - Raw Layer<br/>dados brutos, imutáveis]
-    STG[BigQuery - Staging Layer<br/>limpeza, tipagem, dedup]
-    ANA[BigQuery - Analytics Layer<br/>agregados, star schemas]
-    LKML[Looker - LookML Views<br/>camada semântica]
-    DSH[Looker - Dashboards<br/>consumo]
+    SRC["ERPs / Sistemas Legados<br/>(SAP, Oracle, Totvs)"]
+    ORCH["Apache Airflow<br/>(orquestrador)"]
+    RAW["BigQuery - Raw Layer<br/>dados brutos, imutáveis"]
+    STG["BigQuery - Staging Layer<br/>limpeza, tipagem, dedup"]
+    ANA["BigQuery - Analytics Layer<br/>agregados, star schemas"]
+    LKML["Looker - LookML Views<br/>camada semântica"]
+    DSH["Looker - Dashboards<br/>consumo"]
 
     SRC --> ORCH --> RAW --> STG --> ANA --> LKML --> DSH
 ```
 
-## Custos e Governança
+## Custos e Governança — "Evitando Surpresas na Conta do Google Cloud"
 
-| Ação | Custo | Mitigação |
+| Ação | Problema | Solução |
 |---|---|---|
-| Consulta sem filtro | Alto (lê tabela inteira) | `always_filter` obrigatório |
-| PDT muito frequente | Custo de escrita + storage | `datagroup_trigger` inteligente |
-| Muitas conexões simultâneas | Contenção de slots | Limitar `max_connections` |
-| Tabelas não particionadas | Escaneia desnecessariamente | Forçar `partition_keys` |
+| Consulta sem filtro de data | Lê tabela inteira → caro | `always_filter` obrigatório |
+| PDT recalculada a cada 5 min | Custo de escrita + armazenamento | `datagroup_trigger` inteligente |
+| Muitas pessoas consultando junto | Disputa por recursos | Limitar `max_connections` |
+| Tabela sem partição | Escaneia tudo desnecessariamente | Forçar `partition_keys` |
+
+:::tip Como evitar custos desnecessários
+1. O analista de BI deve configurar **filtro de data obrigatório** em toda consulta
+2. PDTs devem ser recalculadas **só quando os dados de origem mudam**
+3. Dados históricos (anos anteriores) podem ficar em cache **por 30 dias ou mais**
+4. Se um relatório está lento, o problema **não é o Looker** — é a consulta que precisa ser otimizada
+:::
+
+## Resumo: 3 pontos para levar para casa
+
+1. **O Looker se conecta ao BigQuery** como você conecta um monitor ao computador — o engenheiro de dados configura uma única vez, e você só usa.
+2. **PDTs e Cache são os "atalhos"** que fazem suas consultas voarem: resultados pré-calculados que evitam reprocessar milhões de linhas toda vez que você clica em um dashboard.
+3. **Cuide dos custos**: BigQuery cobra pelo volume lido. Filtros de data e tabelas particionadas são seus melhores amigos para manter a conta do Google Cloud sob controle.
 
 ---
 

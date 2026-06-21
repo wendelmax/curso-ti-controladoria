@@ -1,6 +1,12 @@
 # Dimensões e Medidas Financeiras
 
-## Dimensões Temporais
+> **Imagine que...** você está preenchendo uma DRE no Excel. As **linhas** são as contas contábeis (Receita, Custos, Despesas...) — isso são as *dimensões*, os "filtros" ou "categorias". Os **valores** que você digita nas células (R$ 1.000,00) — isso são as *medidas*, os números que respondem "quanto?". No LookML, é a mesma lógica.
+
+## Dimensões Temporais — "Filtrar por mês, trimestre ou ano"
+
+:::tip Traduzindo
+Dimensões de data são o **"filtro de período"** do seu relatório contábil. No Excel, você filtra a coluna "Data" para ver só Janeiro. No Looker, você cria uma `dimension` do tipo `time` e ganha automaticamente: dia, semana, mês, trimestre, ano — tudo a partir de uma única data.
+:::
 
 Dimensões de data são essenciais para análises de séries temporais em controladoria. O Looker permite criar hierarquias temporais automaticamente.
 
@@ -11,12 +17,12 @@ view: dim_tempo {
   dimension_group: data {
     type: time
     timeframes: [
-      raw,           -- data original
-      date,          -- agrupado por dia
-      week,          -- semana
-      month,         -- mês
-      quarter,       -- trimestre
-      year           -- ano
+      raw,           -- data original (ex.: 2026-03-15 14:30:00)
+      date,          -- agrupado por dia (2026-03-15)
+      week,          -- semana (semana 11)
+      month,         -- mês (Março)
+      quarter,       -- trimestre (T1)
+      year           -- ano (2026)
     ]
     sql: ${TABLE}.data_contabil ;;
   }
@@ -42,7 +48,19 @@ view: dim_tempo {
 }
 ```
 
-## Dimensões para Plano de Contas
+:::note Por que isso importa para você?
+Com essas dimensões temporais, você pode:
+- Comparar **mês a mês** a evolução da receita
+- Ver o **trimestre** fechado sem precisar somar manualmente
+- Agrupar por **ano** para análise interanual
+- Tudo isso sem escrever uma linha de SQL — o LookML já preparou esses campos para você
+:::
+
+## Dimensões para Plano de Contas — A "Estrutura Hierárquica"
+
+:::tip Pense como...
+O plano de contas é a **espinha dorsal** da contabilidade. Cada conta tem um código, um nome, uma classificação (Receita/Despesa), e um nível hierárquico. A view abaixo descreve exatamente isso.
+:::
 
 ```lookml
 view: plano_contas {
@@ -94,15 +112,27 @@ view: plano_contas {
 }
 ```
 
+:::caution Jargão explicado
+- **`primary_key: yes`** = "este campo é único para cada linha". Como o CPF: cada conta tem um `id` diferente. Isso permite conectar tabelas corretamente.
+- **`hidden: yes`** = "esconde do usuário final". O campo `conta_pai_id` é técnico (necessário para hierarquia), mas você não precisa ver no Explore.
+- **`description`** = texto que aparece ao passar o mouse. Útil para documentar regras de negócio.
+:::
+
 ## Medidas Financeiras Essenciais
 
-### Agregações Básicas
+### Agregações Básicas — "Resumão" dos números
+
+:::note Pense no Excel
+- **Soma (SUM)** = você seleciona a coluna e clica em AutoSoma → `=SOMA(A1:A100)`
+- **Média (AVERAGE)** = você tira a média do período → `=MÉDIA(A1:A100)`
+- **Contagem (COUNT)** = você conta quantos lançamentos existem → `=CONT.NÚM(A1:A100)`
+- **Distintos (COUNT DISTINCT)** = você conta quantos dias diferentes tiveram lançamento
+:::
 
 ```lookml
 view: dre_medidas {
   sql_table_name: `projeto.controladoria.lancamentos_contabeis` ;;
 
-  -- Valor total (soma simples)
   measure: valor_total_saldo {
     type: sum
     sql: ${TABLE}.valor ;;
@@ -110,7 +140,6 @@ view: dre_medidas {
     label: "Valor Total"
   }
 
-  -- Média por período
   measure: valor_medio_mensal {
     type: average
     sql: ${TABLE}.valor ;;
@@ -118,14 +147,12 @@ view: dre_medidas {
     label: "Valor Médio Mensal"
   }
 
-  -- Contagem de lançamentos
   measure: qtd_lancamentos {
     type: count
     label: "Qtd. Lançamentos"
     drill_fields: [lancamentos_contabeis.id_lancamento]
   }
 
-  -- Número de dias com lançamento
   measure: dias_com_lancamento {
     type: count_distinct
     sql: ${TABLE}.data_contabil ;;
@@ -134,9 +161,17 @@ view: dre_medidas {
 }
 ```
 
-### Medidas Calculadas com `type: number`
+### Medidas Calculadas — O "Coração" da DRE
 
-Para KPIs financeiros que não são simples agregações, use `type: number` com SQL customizado.
+:::tip Por que isso importa para você?
+Esta é a parte mais importante do módulo. Aqui o analista de BI traduz **suas regras contábeis** para o LookML:
+
+- "Receita Líquida = Receita Bruta - Deduções"
+- "Margem Bruta = (Receita - Custos) / Receita"
+- "EBITDA = Resultado Operacional + Depreciação"
+
+Tudo isso vira `measure` no LookML — e você nunca mais discute "como calculamos a margem?".
+:::
 
 ```lookml
 measure: receita_bruta {
@@ -194,7 +229,15 @@ measure: margem_liquida {
 }
 ```
 
-### Indicadores de Desempenho
+:::caution Lendo o CASE WHEN
+O `CASE WHEN ... THEN ... ELSE 0 END` é o "SE ... ENTÃO ... SENÃO" do SQL. Exemplo:
+- `CASE WHEN natureza = 'C' AND tipo_conta = 'Receita' THEN valor ELSE 0 END`
+- Traduzindo: "SE a natureza for crédito E o tipo for Receita, **use o valor**; SENÃO, use zero"
+
+Isso garante que só entram créditos de receita na conta de Receita Bruta.
+:::
+
+### Indicadores de Desempenho — EBITDA, Margens, Liquidez
 
 ```lookml
 measure: ebitda {
@@ -222,7 +265,11 @@ measure: indice_liquidez_corrente {
 }
 ```
 
-## Filtros Parameterizados
+## Filtros Parameterizados — Dando Poder ao Usuário
+
+:::tip Pense como...
+Filtros parametrizados são como **criar um campo "digite o mês"** no seu relatório. O usuário escolhe o período sem precisar chamar o analista de BI para ajustar o filtro toda vez.
+:::
 
 ### Template Filters para Datas Dinâmicas
 
@@ -242,17 +289,11 @@ explore: dre_resultado {
 }
 ```
 
-### Filtros com `{% condition %}`
-
-```lookml
-dimension: periodo_filtrado {
-  type: string
-  sql: {% condition periodo_personalizado %}
-         ${TABLE}.data_contabil
-       {% endcondition %} ;;
-  hidden: yes
-}
-```
+:::note O que isso faz?
+- `conditionally_filter` = "se o usuário não escolher nada, mostra só os últimos 90 dias" (filtro padrão seguro)
+- `unless` = "mas se o usuário escolher um período personalizado, respeita a escolha dele"
+- `parameter` = cria um campo onde o usuário pode digitar/datas
+:::
 
 ### Filtro de Período Fiscal
 
@@ -313,6 +354,8 @@ dimension: filtro_grupo_dre {
 
 ## Exemplo Completo: View de DRE
 
+Aqui está uma DRE completa — com Realizado vs. Orçado, Variação e % sobre Receita Líquida.
+
 ```lookml
 view: dre_view {
   sql_table_name: `projeto.controladoria.fato_dre` ;;
@@ -321,7 +364,6 @@ view: dre_view {
   include: "/views/centros_custo.view.lkml"
   include: "/views/dim_tempo.view.lkml"
 
-  -- Dimensões
   dimension: id_registro {
     type: number
     primary_key: yes
@@ -340,7 +382,6 @@ view: dre_view {
     label: "Conta"
   }
 
-  -- Medidas de Valor
   measure: valor_realizado {
     type: sum
     sql: ${TABLE}.valor_real ;;
@@ -370,7 +411,6 @@ view: dre_view {
     label: "% Variação"
   }
 
-  -- Razão de despesas
   measure: razao_despesa_receita {
     type: number
     value_format_name: percent_2
@@ -380,6 +420,12 @@ view: dre_view {
   }
 }
 ```
+
+## Resumo: 3 pontos para levar para casa
+
+1. **Dimensões = "filtros" ou "categorias"** (mês, centro de custo, conta contábil). Medidas = "números" (soma, contagem, média). É a diferença entre a **linha** da planilha e o **valor** na célula.
+2. **Uma medida calculada traduz sua regra de negócio** — Receita Líquida, Margem Bruta, EBITDA — em código. Uma vez definida, todo mundo usa a mesma fórmula. Nunca mais "cada um calcula do seu jeito".
+3. **Filtros parametrizados dão autonomia** — o usuário escolhe o período ou grupo de contas sem precisar do analista de BI. É como criar um "campo editável" no seu relatório.
 
 ---
 

@@ -1,5 +1,18 @@
 # 5.3 — Detecção de Anomalias em Lançamentos Contábeis
 
+> 🔍 **Analogia**: Imagine que você é o porteiro de um prédio. Conhece cada morador de vista. Um dia, alguém entra de madrugada carregando um monitor de computador. Você não sabe exatamente *o que* está errado, mas algo *parece estranho*. É exatamente isso que a detecção de anomalias faz: **identifica o que foge do padrão normal**, mesmo sem saber o que é.
+
+:::note "Anomalia" não é sinônimo de "fraude"
+Importante: uma anomalia é um **alerta**, não uma condenação. Pode ser fraude, erro de digitação, ou simplesmente um lançamento legítimo fora do comum. O papel do modelo é **levantar a bandeira** — quem decide é você, profissional de controladoria.
+:::
+
+## 🎯 Por que isso importa para você?
+
+Todo controller tem aquela sensação: "tem algo errado mas não consigo provar". Detecção de anomalias:
+- **Automatiza** a busca por "agulhas no palheiro" — em vez de revisar 10.000 lançamentos manualmente
+- **Padroniza** critérios — seu "estranho" pode ser diferente do "estranho" do seu colega
+- **Acende alertas cedo** — antes que um pequeno erro vire um grande problema de auditoria
+
 ## Por que Detectar Anomalias?
 
 - **Fraudes** seguem padrões diferentes de transações normais
@@ -7,7 +20,15 @@
 - **Desvios de processo** indicam falta de controles internos
 - **Outliers estatísticos** merecem investigação
 
-## Abordagem Estatística (Sem ML)
+## Abordagem Estatística (Sem ML — só com SQL)
+
+:::tip Z-Score, IQR... nomes complicados, ideias simples
+Essas técnicas são apenas formas de responder: **"Quanto esse valor foge do normal?"**
+- Z-Score: "Quantos desvios padrão esse valor está da média?"
+- IQR: "Este valor está muito além do que 75% dos lançamentos costumam ser?"
+
+Você não precisa calcular na mão — isso é trabalho do SQL. Só precisa entender o que as respostas significam.
+:::
 
 ### Z-Score — Quão atípico é um valor?
 
@@ -169,6 +190,17 @@ HAVING COUNT(*) > 1;
 5. **Registro**: Mantenha log de todas as anomalias detectadas
 6. **Feedback loop**: Marque falsos positivos para melhorar o modelo
 
+## 🎯 Resumo do Capítulo
+
+| Conceito | Em português claro |
+|----------|-------------------|
+| **Z-Score** | Mede "o quão fora da curva" um valor está |
+| **IQR** | Identifica outliers baseado nos quartis dos dados |
+| **Isolation Forest** | Algoritmo ML que isola pontos atípicos (como separar uma peça diferente em uma esteira) |
+| **Anomalia ≠ Fraude** | Anomalia é um alerta para você investigar, não uma acusação |
+
+> 💡 **Regra prática**: Na dúvida entre regra manual e ML? Comece com estatística simples (Z-Score, IQR). Se os padrões forem muito complexos para regras fixas, migre para ML. E lembre-se: **todo falso positivo é um alerta que você investiga; todo falso negativo é um problema que você não viu.**
+
 ## Exercício Prático
 
 1. Crie uma query que encontre os 10 lançamentos mais atípicos (maior desvio da média da conta)
@@ -176,3 +208,8 @@ HAVING COUNT(*) > 1;
 3. Liste lançamentos feitos em finais de semana
 4. Encontre contas que nunca tiveram lançamentos (podem indicar conta desnecessária)
 5. Crie um ranking de contas por volatilidade (coeficiente de variação dos valores)
+
+:::tip Não se prenda à perfeição dos exercícios
+O importante é praticar o **raciocínio**: "o que é normal vs anormal nos meus dados?".
+Comece simples: uma média, um desvio, um ORDER BY. Depois adicione complexidade.
+:::

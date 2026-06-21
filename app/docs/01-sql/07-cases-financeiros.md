@@ -1,6 +1,18 @@
 # 1.7 — Casos Financeiros Práticos
 
-Case studies reais que você vai enfrentar no dia-a-dia da controladoria.
+:::tip Imagine que...
+Chegou sexta-feira, 17h, e o CFO aparece na sua mesa: "Preciso do fluxo de caixa projetado para os próximos 90 dias até segunda-feira de manhã."
+
+Sem SQL, você passaria o fim de semana extraindo relatórios do ERP, juntando planilhas, conferindo PROCVs e rezando para não errar nenhuma fórmula.
+
+Com SQL, você escreve uma query, executa em 2 segundos, e o relatório está pronto. Este módulo te dá exatamente esses poderes.
+:::
+
+:::note Por que isso importa para você?
+Cada case aqui é um problema que você **já enfrentou ou vai enfrentar** na controladoria: conciliação, DRE, fluxo de caixa, aging de recebíveis, margem por produto. A diferença é que agora você vai aprender a resolver tudo em SQL — mais rápido, sem erros de fórmula, e sem depender de ninguém.
+
+Não precisa entender tudo de primeira. Veja o problema, leia a query, tente executar no playground. A prática vai fazer o resto.
+:::
 
 Cada case abaixo mostra um problema real seguido da solução em SQL. Tente entender **o problema primeiro**, depois veja como o SQL resolve.
 
@@ -161,6 +173,12 @@ ORDER BY p.codigo;
 3. Calcule o prazo médio de recebimento por cliente
 4. Faça uma análise de concentração de faturamento (qual cliente representa quantos % do total)
 5. Crie um relatório de inadimplência: clientes com contas em aberto vencidas há mais de 30 dias
+
+## Para fixar
+
+- Todos os cases usam conceitos que você já aprendeu: SELECT, WHERE, GROUP BY, JOIN, CTE, CASE WHEN
+- A diferença é que agora você está **combinando** esses conceitos para resolver problemas reais
+- No começo parece difícil, mas com prática cada query fica mais natural — como montar uma fórmula contábil
 
 import SqlExercicio from '@site/src/components/SqlExercicio'
 

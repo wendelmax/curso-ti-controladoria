@@ -1,24 +1,43 @@
 # Prática com Datasets Públicos do BigQuery
 
+Imagine que você quer praticar SQL contábil, mas não tem dados reais da sua empresa para testar. O que fazer? O Google disponibiliza **dezenas de bancos de dados públicos e gratuitos** para você explorar.
+
+É como ter uma loja de departamentos de dados: você entra, pega o que precisa (de graça), e faz suas análises. E o melhor: são dados reais de empresas como Apple, Microsoft e Bloomberg.
+
+## Por que isso importa para você?
+
+Na controladoria, você muitas vezes precisa:
+- Comparar indicadores da sua empresa com o mercado
+- Estudar demonstrações financeiras de concorrentes
+- Praticar SQL sem risco de quebrar dados de produção
+
+Com os datasets públicos, você faz tudo isso sem custo e sem risco.
+
 ## Acessando `bigquery-public-data`
 
-O Google disponibiliza dezenas de datasets públicos gratuitos. Para acessá-los, basta referenciá-los no formato:
+Para usar os dados públicos, basta referenciá-los no formato:
 
 ```sql
 FROM `bigquery-public-data.nome_dataset.nome_tabela`;
 ```
 
+:::tip É como pegar um livro na biblioteca
+O prefixo `bigquery-public-data` é o "endereço" da biblioteca. O `nome_dataset` é a "estante". E `nome_tabela` é o "livro" que você quer consultar. Você não precisa criar nada — só consultar.
+:::
+
 ### Datasets Relevantes para Finanças e Controladoria
 
-| Dataset | Conteúdo | Uso |
-|---------|----------|-----|
-| `sec_sec10k` | Demonstrações financeiras (SEC) de empresas americanas | Análise de DRE, balanço, fluxo de caixa |
-| `bloomberg_financial` | Dados de mercado da Bloomberg | Cotações, índices, valuation |
-| `cboe_market_data` | Dados de opções e volatilidade da CBOE | Risco de mercado, Greeks |
-| `census_bureau_usa` | Dados censitários dos EUA | Análise demográfica para expansão |
-| `world_bank_wdi` | Indicadores de desenvolvimento do Banco Mundial | Cenário macroeconômico |
+| Dataset | Conteúdo | Uso na Controladoria |
+|---|---|---|
+| `sec_sec10k` | Demonstrações financeiras (SEC) de empresas americanas | Analisar DRE, balanço patrimonial, fluxo de caixa de gigantes como Apple, Google |
+| `bloomberg_financial` | Dados de mercado da Bloomberg | Cotações de ações, índices, valuation |
+| `cboe_market_data` | Dados de opções e volatilidade | Análise de risco de mercado |
+| `census_bureau_usa` | Dados censitários dos EUA | Análise demográfica para expansão de negócios |
+| `world_bank_wdi` | Indicadores do Banco Mundial | Cenário macroeconômico global |
 
 ## Exemplo 1: Análise de DRE de Empresas (SEC)
+
+Vamos analisar a receita e o lucro das maiores empresas de tecnologia do mundo:
 
 ```sql
 -- Extrair receita líquida e lucro líquido das 10 maiores empresas
@@ -35,7 +54,7 @@ ORDER BY company_name, fiscal_year, account;
 ```
 
 ```sql
--- Margem líquida por ano (empresas de tecnologia)
+-- Margem líquida por ano (Apple, Microsoft, Google)
 WITH dre AS (
   SELECT
     company_name,
@@ -59,7 +78,17 @@ FROM dre
 ORDER BY company_name, fiscal_year;
 ```
 
+:::note O que você pode descobrir com isso?
+- Qual empresa tem a maior margem líquida?
+- Como a pandemia afetou a receita de cada uma?
+- Quem está crescendo mais rápido?
+
+São perguntas que você pode responder com SQL — sem precisar de planilha.
+:::
+
 ## Exemplo 2: Pipeline de Fechamento Contábil
+
+Aqui você vai simular o processo completo de fechamento contábil — desde a ingestão de lançamentos até o relatório gerencial.
 
 ### Etapa 1 — Ingestão de Lançamentos
 
@@ -139,14 +168,12 @@ GROUP BY ticker, ano
 ORDER BY ticker, ano;
 ```
 
-## 4. Scheduling de Consultas (Fechamento Automático)
+## 4. Agendando Consultas (Fechamento Automático)
 
-BigQuery permite agendar consultas via **Scheduled Queries** (console ou `bq`).
+BigQuery permite programar consultas para rodar automaticamente — tipo um "timer" do SQL. Útil para fechamentos mensais que rodam todo dia 1º.
 
 ```sql
 -- Exemplo: consulta programada para o 1º dia de cada mês às 08:00
--- Roda o fechamento do mês anterior e salva em tabela de histórico
-
 DECLARE mes_fechamento DATE;
 SET mes_fechamento = DATE_SUB(DATE_TRUNC(CURRENT_DATE(), MONTH), INTERVAL 1 MONTH);
 
@@ -173,14 +200,14 @@ GROUP BY empresa, conta_contabil;
 5. Write preference: Append to table
 ```
 
-## 5. Exportação de Resultados
+## 5. Exportando Resultados
 
 ### Para Google Sheets
 
-```sql
--- Opção 1: Exportar via console (Results → Save to Google Sheets)
--- Opção 2: Usar ferramenta externa (AppScript, APIs)
--- Opção 3: bq CLI
+```
+Opção 1: Console (Results → Save to Google Sheets)
+Opção 2: AppScript ou APIs (para automação)
+Opção 3: bq CLI (linha de comando)
 ```
 
 ```bash
@@ -190,22 +217,24 @@ bq query --format=csv \
   > fechamento_mensal.csv
 ```
 
-### Para Looker Studio
+### Para Looker Studio (Dashboards)
 
-1. Executar a consulta no BigQuery
-2. Clicar em **Explore with Looker Studio**
-3. Selecionar métricas e dimensões para criar dashboard
+1. Execute a consulta no BigQuery
+2. Clique em **Explore with Looker Studio**
+3. Selecione métricas e dimensões para criar seu dashboard
 
-### Exemplo de Dashboard em Looker Studio
+### Exemplo de Dashboard
 
 | Componente | Fonte | Métrica |
-|-----------|-------|---------|
+|---|---|---|
 | Receita mensal | `fechamento_mensal` | Soma de `saldo` por `mes_competencia` |
 | Top 10 despesas | `lancamentos_diarios` | Soma de `valor` por `conta_contabil` |
 | Fluxo de caixa acumulado | `caixa_diario` | Running total de saldo |
 | Comparativo anual | `historico_fechamentos` | LAG de saldo em relação ao ano anterior |
 
 ## 6. Script de Configuração Completa
+
+Este script monta o pipeline inteiro de fechamento contábil no BigQuery — da ingestão ao relatório:
 
 ```sql
 -- Pipeline completo de fechamento contábil no BigQuery
@@ -257,14 +286,24 @@ ORDER BY mes_competencia, classificacao;
 
 ## 7. Dicas para Uso em Controladoria
 
-| Tarefa | Como Fazer |
-|--------|-----------|
-| Fechamento mensal automatizado | Scheduled Query no 1º dia do mês |
-| Conciliação bancária | CTE com `LAG` para saldo acumulado e flag de divergência |
-| Relatório gerencial | Consulta SQL + Looker Studio |
-| Auditoria de dados | `INFORMATION_SCHEMA` para rastrear jobs |
-| Exportação para contabilidade | CSV via `bq` ou Google Sheets |
-| DRE comparativa | `PIVOT` (ou `SUM(CASE)`) por mês/ano |
+| Tarefa | Como Fazer | Dica |
+|---|---|---|
+| Fechamento mensal automatizado | Scheduled Query no 1º dia do mês | Economiza horas de trabalho manual |
+| Conciliação bancária | CTE com `LAG` para saldo acumulado | Detecta divergências automaticamente |
+| Relatório gerencial | Consulta SQL + Looker Studio | Dashboard atualizado em tempo real |
+| Auditoria de dados | `INFORMATION_SCHEMA` para rastrear jobs | Sabe quem rodou o que e quando |
+| Exportação para contabilidade | CSV via `bq` ou Google Sheets | Dados prontos para importar no ERP |
+| DRE comparativa | `PIVOT` (ou `SUM(CASE)`) por mês/ano | Comparação direta entre períodos |
+
+## Resumo — O que você aprendeu
+
+| Dataset Público | Para que serve |
+|---|---|
+| `sec_sec10k` | Analisar demonstrações financeiras de gigantes globais |
+| `bloomberg_financial` | Dados de mercado e cotações |
+| `world_bank_wdi` | Indicadores macroeconômicos |
+
+> **Lembre-se:** Você pode consultar TODOS esses datasets sem pagar nada (dentro do nível gratuito). É a melhor forma de praticar SQL contábil com dados reais.
 
 import Quiz from '@site/src/components/Quiz'
 import quizes from '@site/src/components/Quiz/quizData'

@@ -1,5 +1,21 @@
 # 5.6 — Ferramentas Práticas de IA para Controladoria
 
+> 🧰 **Analogia**: Você não precisa saber construir um martelo para usar um. IA aplicada é a mesma coisa. Existem dezenas de ferramentas prontas que fazem o trabalho pesado para você — seu papel é **escolher a ferramenta certa para cada problema**, não construí-las do zero.
+
+:::note Você não vai programar nada aqui
+Este capítulo é um **tour guiado** pelas ferramentas de IA disponíveis no mercado.
+Pense como um catálogo: você vai conhecer o que existe, para que serve cada uma, e quando usar.
+Nada de código novo — só exemplos para você ver como funciona.
+:::
+
+## 🎯 Por que isso importa para você?
+
+O mercado de ferramentas de IA cresce tão rápido que é fácil se sentir perdido. Este capítulo é seu **mapa**:
+- O que cada ferramenta faz (sem jargão técnico)
+- Quando usar cada uma (baseado no seu problema real)
+- Quanto custa (aproximadamente)
+- Qual a complexidade (para você planejar a implementação)
+
 ## Panorama das Ferramentas
 
 ```mermaid
@@ -179,6 +195,19 @@ Recursos nativos do Sheets para finanças:
 | Automatizar AP completo | Rossum + n8n | Média | Médio |
 | Dashboard executivo | Looker + Explain | Baixa | Médio |
 | Análise de contratos | Claude | Baixa | Baixo |
+
+## 🎯 Resumo do Capítulo
+
+| Ferramenta | Para que serve | Quando usar |
+|-----------|----------------|-------------|
+| **LLMs (GPT, Claude, Gemini)** | Análise de texto, prompts, classificação | Problemas que exigem "entendimento" de linguagem |
+| **Document AI** | Extrair dados de notas fiscais e contratos | Grandes volumes de documentos |
+| **Vertex AI** | Plataforma completa de ML | Quando BQML não é suficiente |
+| **Looker / Tableau** | BI com IA explicativa | Dashboards executivos |
+| **n8n / Zapier** | Automatizar fluxos com IA | Processos repetitivos com várias etapas |
+| **Copilot** | Acelerar escrita de SQL | Seu dia a dia no VS Code |
+
+> 💡 **Regra prática**: Comece simples (GPT para classificação, BQML para previsão). Só migre para ferramentas mais complexas quando a simples não der conta. 80% dos problemas de controladoria se resolvem com **LLM + BQML + SQL**.
 
 ## Exercício Final
 

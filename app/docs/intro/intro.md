@@ -4,6 +4,14 @@ slug: /intro
 
 # Curso de TI para Controladoria
 
+:::tip Imagine que...
+Seu chefe pede: "Me traga o total de vendas por cliente dos últimos 3 meses, com a margem de cada produto e a comparação com o mesmo período do ano passado."
+
+No seu dia a dia, isso significa: pedir pro TI extrair os dados, esperar dias, receber uma planilha gigante, e passar horas no Excel com PROCV, tabela dinâmica e fórmulas manuais.
+
+Agora imagine que você mesmo pode abrir o sistema, digitar uma pergunta em SQL e ter a resposta em **segundos**. É isso que você vai aprender aqui: **autonomia sobre os dados**.
+:::
+
 Bem-vindo ao curso que vai transformar sua expertise em **controladoria, fiscal e contabilidade** em superpoderes com **tecnologia de dados**.
 
 ## Para Quem é Este Curso
@@ -22,6 +30,10 @@ Agora você vai aprender a **extrair, transformar, visualizar e analisar dados**
 | 4 | **Tableau** — Visualização de dados | 8h |
 | 5 | **IA Aplicada** — Machine learning para finanças | 10h |
 | 6 | **Projeto Final** — Pipeline completa | 6h |
+
+:::note Por que isso importa para você?
+Na controladoria, informação é poder. Quanto mais rápido você acessa os dados, mais rápido fecha o balanço, responde ao auditor ou apresenta aquele relatório que a diretoria pediu de última hora. Este curso não é sobre virar programador — é sobre **você não depender mais de ninguém para buscar informações**. Você continua sendo contador, mas com o superpoder de acessar qualquer dado em segundos.
+:::
 
 ## Como Usar o Curso
 
@@ -57,4 +69,10 @@ O banco simula uma empresa industrial brasileira com 3 subsidiárias:
 - Navegador web moderno (Chrome, Firefox, Edge)
 - **Nada para instalar** — tudo roda no navegador
 
-Vamos começar?
+## Para fixar
+
+- Este curso ensina tecnologia **para profissionais de controladoria** — não para programadores
+- Você vai aprender a buscar dados sozinho, sem depender do TI
+- Tudo roda no navegador: **nada para instalar**
+
+Pronto para começar? Respira fundo que a jornada vai começar. Prometemos que no final você vai olhar para trás e pensar: "por que não aprendi isso antes?"

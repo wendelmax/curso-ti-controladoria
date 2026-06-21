@@ -1,12 +1,31 @@
-# 6.7 — Projeto Final: Case Completo Grupo Nova Era
+# 6.7 — Projeto Final: Exercícios Práticos
 
 import SqlExercicio from '@site/src/components/SqlExercicio';
 
+> ✍️ **Analogia do Dia**  
+> Lembra quando você estava aprendendo a fechar o balanço e fazia exercícios com casos fictícios antes de pegar um balanço real?
+>
+> **Estes exercícios são a mesma coisa.** São 6 desafios que testam tudo que você aprendeu — do SQL básico à análise financeira completa.
+>
+> É o "simulado" antes da prova. Mas a prova aqui é a vida real.
+
+---
+
 Este projeto integra todos os módulos do curso em um case real de análise financeira.
+
+:::note Como usar este material
+Cada exercício tem um **editor SQL interativo**. Você digita a query, executa e vê o resultado na hora. Se travar, use a dica (`hint`). Se quiser conferir, veja a resposta esperada (`expectedSql`).
+
+**Não copie a resposta de cara.** Tente fazer sozinho primeiro. Errar faz parte do aprendizado!
+:::
+
+---
 
 ## Etapa 1: Análise de Faturamento
 
-Calcule o faturamento total por empresa e por mês, ordenado por empresa e mês.
+**O que testa:** `JOIN`, `GROUP BY`, `STRFTIME`
+
+Calcule o faturamento total por empresa e por mês, ordenado por empresa e mês. É como fazer um "total por empresa e mês" no Excel, mas em SQL.
 
 <SqlExercicio
   id="pf-1"
@@ -16,9 +35,17 @@ Calcule o faturamento total por empresa e por mês, ordenado por empresa e mês.
   table="faturamento, empresas"
 />
 
+:::tip
+Se está travando, lembre: primeiro faça o JOIN entre faturamento e empresas, depois agrupe por empresa e mês.
+:::
+
+---
+
 ## Etapa 2: DRE Simplificado
 
-Monte a DRE (Demonstração do Resultado) consolidada de todas as empresas.
+**O que testa:** `CASE WHEN`, agregação condicional
+
+Monte a DRE (Demonstração do Resultado) consolidada de todas as empresas. Você já sabe fazer DRE — agora faz em SQL.
 
 <SqlExercicio
   id="pf-2"
@@ -28,9 +55,13 @@ Monte a DRE (Demonstração do Resultado) consolidada de todas as empresas.
   table="lancamentos_contabeis"
 />
 
+---
+
 ## Etapa 3: Análise de Inadimplência
 
-Identifique clientes inadimplentes e calcule o percentual de contas vencidas.
+**O que testa:** `LEFT JOIN`, `COALESCE`, `HAVING`
+
+Identifique clientes inadimplentes e calcule o percentual de contas vencidas. **Informação crítica para a diretoria.**
 
 <SqlExercicio
   id="pf-3"
@@ -40,9 +71,13 @@ Identifique clientes inadimplentes e calcule o percentual de contas vencidas.
   table="clientes, contas_receber"
 />
 
+---
+
 ## Etapa 4: Dashboard de Indicadores
 
-Calcule indicadores-chave para o dashboard executivo.
+**O que testa:** Subqueries, `CASE WHEN` avançado, KPIs financeiros
+
+Calcule indicadores-chave para o dashboard executivo. **É a base do painel que a diretoria vai usar.**
 
 <SqlExercicio
   id="pf-4"
@@ -52,9 +87,13 @@ Calcule indicadores-chave para o dashboard executivo.
   table="lancamentos_contabeis, centros_custo"
 />
 
+---
+
 ## Etapa 5: Previsão de Fluxo de Caixa
 
-Use os dados de contas a pagar e receber para projetar o fluxo de caixa.
+**O que testa:** Subqueries correlacionadas, `COALESCE`
+
+Use os dados de contas a pagar e receber para projetar o fluxo de caixa. Você já faz isso no Excel — agora faz em SQL.
 
 <SqlExercicio
   id="pf-5"
@@ -64,9 +103,13 @@ Use os dados de contas a pagar e receber para projetar o fluxo de caixa.
   table="contas_receber, contas_pagar"
 />
 
+---
+
 ## Etapa 6: Análise de Performance Final
 
-Combine todos os dados em uma única análise de performance.
+**O que testa:** TUDO — JOIN, GROUP BY, COALESCE, ordenação
+
+Combine todos os dados em uma única análise de performance. **O "fechamento" do projeto.**
 
 <SqlExercicio
   id="pf-6"
@@ -78,6 +121,17 @@ Combine todos os dados em uma única análise de performance.
 
 ---
 
+## Resumo — O Que Você Dominou
+
+| Etapa | Habilidade | Nível |
+|-------|-----------|-------|
+| 1 | `JOIN` + `GROUP BY` | ⭐ Essencial |
+| 2 | `CASE WHEN` em finanças | ⭐ Essencial |
+| 3 | `LEFT JOIN` + inadimplência | ⭐⭐ Importante |
+| 4 | KPIs + subqueries | ⭐⭐ Importante |
+| 5 | Projeção de fluxo de caixa | ⭐⭐ Importante |
+| 6 | Análise completa (tudo junto) | ⭐⭐⭐ Desafio Final |
+
 **Parabéns!** Ao completar todas as etapas, você dominou:
 
 - SQL analítico com JOINs, agregações e subqueries
@@ -85,5 +139,11 @@ Combine todos os dados em uma única análise de performance.
 - Construção de pipelines de análise
 - Preparação para dashboards em Looker e Tableau
 - Fundamentos de ML para previsão financeira
+
+:::tip Lembre-se: você não precisa saber TUDO de SQL
+Você precisa saber o suficiente para **resolver problemas reais de controladoria**. E esses 6 exercícios cobrem EXATAMENTE o que você vai usar no dia a dia.
+
+O resto você aprende quando precisar — o Google é seu amigo! 🚀
+:::
 
 Agora você está pronto para aplicar esses conhecimentos em situações reais de análise financeira e controladoria!

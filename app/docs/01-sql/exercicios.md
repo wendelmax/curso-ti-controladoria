@@ -1,6 +1,18 @@
 # 1.8 — Exercícios de SQL
 
+:::tip Imagine que...
+Lembra quando você estava aprendendo a usar Excel e passou horas fazendo planilhas de teste até ficar craque no PROCV? Com SQL é a mesma coisa: **só se aprende praticando**.
+
+Estes exercícios são como uma academia para o seu cérebro: cada repetição fortalece um músculo diferente. Comece pelos mais fáceis (Nível 1) e vá subindo. Não se preocupe em errar — o erro é parte do aprendizado.
+:::
+
 Resolva todos os exercícios usando o **SQL Playground**.
+
+:::note Por que isso importa para você?
+Estes exercícios foram desenhados por um contador para contadores. Cada pergunta simula um problema real que você vai encontrar no dia a dia: total de vendas, salários por departamento, filtros por estado, agrupamento por mês.
+
+Se você conseguir resolver todos até o Desafio Final, pode se considerar **apto a usar SQL profissionalmente na controladoria**.
+:::
 
 ## Nível 1 — Fundamentos e Filtros
 
@@ -56,6 +68,13 @@ Crie uma query que retorne um **dashboard executivo** em uma única consulta:
 - Despesas Operacionais
 - Resultado Líquido
 - Saldo de Caixa (contas_receber abertos - contas_pagar abertos)
+
+## Para fixar
+
+- Comece pelo Nível 1 e progrida no seu ritmo — não pule etapas
+- Se travar em um exercício, releia a aula correspondente
+- O **SQL Playground** é seu melhor amigo: teste, erre, tente de novo
+- O Desafio Final é a prova de fogo: se você conseguir montar a query do dashboard, você DOMINOU SQL
 
 import Quiz from '@site/src/components/Quiz'
 import quizes from '@site/src/components/Quiz/quizData'

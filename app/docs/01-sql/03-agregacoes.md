@@ -4,6 +4,12 @@
 GROUP BY é como a **tabela dinâmica do Excel**. Você já deve ter selecionado dados, ido em "Inserir > Tabela Dinâmica", arrastado "Mês" para as linhas e "Valor" para os valores. GROUP BY faz exatamente isso: `GROUP BY mes` + `SUM(valor)` = total agrupado por mês. A diferença é que no SQL você escreve a lógica em vez de arrastar campos.
 :::
 
+:::note Por que isso importa para você?
+Na controladoria, você vive fazendo contas como: "qual o total de vendas do mês?", "qual a média salarial por departamento?", "quantos clientes temos por estado?". Essas são **perguntas de agregação**: você pega muitos dados e resume em um número só.
+
+No Excel, você faria isso com fórmula =SOMASE ou tabela dinâmica. No SQL, as funções de agregação (SUM, AVG, COUNT) fazem o mesmo trabalho — mas sem limites de tamanho de planilha.
+:::
+
 ## Funções de Agregação
 
 Funções que operam sobre **conjuntos de linhas** e retornam **um único valor**:
@@ -125,6 +131,12 @@ LIMIT;    -- 7. limitar
 4. Qual o valor total de impostos a recolher por tipo de imposto?
 5. Quais clientes tiveram mais de 2 notas fiscais emitidas?
 6. Qual o total de vendas (valor líquido) por mês?
+
+## Para fixar
+
+- **GROUP BY** = tabela dinâmica do SQL: agrupa linhas iguais e aplica contas
+- **SUM** = soma, **AVG** = média, **COUNT** = contagem, **MAX/MIN** = maior/menor
+- **WHERE** filtra **antes** de agrupar; **HAVING** filtra **depois** de agrupar
 
 import SqlExercicio from '@site/src/components/SqlExercicio'
 

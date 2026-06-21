@@ -8,6 +8,17 @@ Diferença crucial do GROUP BY: no GROUP BY, você perde as linhas individuais (
 Exemplo prático: você quer o total de vendas do mês **sem agrupar** — cada venda individual aparece, mas com uma coluna extra mostrando o total do mês. No Excel, você faria `=SOMASE(A:A; mês; C:C)` e arrastaria para baixo. Window function faz a mesma coisa no SQL.
 :::
 
+:::note Por que isso importa para você?
+Este é um dos tópicos mais úteis para a controladoria. Sabe quando você quer:
+
+- O **saldo acumulado** do caixa mês a mês?
+- O **ranking** de clientes por faturamento?
+- A **variação percentual** das despesas de um mês para o outro?
+- A **média móvel** de vendas dos últimos 3 meses?
+
+Tudo isso é Window Function. No Excel você faria com fórmulas arrastadas. No SQL, resolve em uma linha.
+:::
+
 Window functions realizam cálculos **através de um conjunto de linhas relacionadas** sem agrupar os resultados.
 
 São essenciais para: saldos acumulados, rankings, médias móveis, comparações período-a-período.
@@ -151,6 +162,14 @@ FROM fat_mensal;
 3. Para cada funcionário, mostre o salário e a diferença para a média do departamento
 4. Liste as despesas mensais com variação percentual em relação ao mês anterior
 5. Crie uma query que mostre o saldo de caixa projetado (contas_receber - contas_pagar) ao longo do tempo
+
+## Para fixar
+
+- Window function = cálculo que **não agrupa** linhas — cada linha original continua existindo
+- **PARTITION BY** = divide em grupos (ex: por mês, por departamento)
+- **ROW_NUMBER()** = numera linhas (ranking)
+- **SUM() OVER** = soma acumulada (como arrastar fórmula no Excel)
+- **LAG/LEAD** = compara com linha anterior/seguinte
 
 import SqlExercicio from '@site/src/components/SqlExercicio'
 

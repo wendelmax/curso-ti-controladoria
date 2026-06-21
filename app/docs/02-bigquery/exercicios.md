@@ -4,7 +4,13 @@ import SqlExercicio from '@site/src/components/SqlExercicio';
 
 Os exercícios abaixo usam o mesmo banco do curso, simulando queries do BigQuery com funções compatíveis com SQL.js.
 
+:::tip Como usar este exercício
+Cada nível tem um tema diferente. Leia o enunciado, tente resolver sozinho, e só olhe a dica (hint) se travar. O objetivo é praticar, não acertar de primeira.
+:::
+
 ## Nível 1 — Diferenças de SQL
+
+**Por que isso importa para você?** No BigQuery, funções de data e string funcionam de forma diferente do SQL tradicional. Estes exercícios vão te preparar para escrever consultas que funcionam de verdade no BigQuery — sem sustos de "por que isso deu erro?".
 
 <SqlExercicio
   id="bq-1"
@@ -32,6 +38,8 @@ Os exercícios abaixo usam o mesmo banco do curso, simulando queries do BigQuery
 
 ## Nível 2 — Particionamento e Clustering
 
+**Por que isso importa para você?** Particionamento é a técnica mais eficaz para reduzir custos no BigQuery — e você aprendeu que cada centavo conta. Estes exercícios simulam como filtrar por partição para processar só o que você precisa.
+
 <SqlExercicio
   id="bq-4"
   prompt="**Simulação de Particionamento** — Em BigQuery, particionar por data reduz custos. Simule uma consulta otimizada: calcule o total de contas a pagar apenas do mês de abril de 2026, filtrando pela data de vencimento."
@@ -49,6 +57,8 @@ Os exercícios abaixo usam o mesmo banco do curso, simulando queries do BigQuery
 />
 
 ## Nível 3 — Funções Analíticas (Window Functions)
+
+**Por que isso importa para você?** Window functions são o "Excel do SQL" — com elas você faz ranking de clientes, comparação mês a mês e muito mais, tudo em uma única consulta. Dominar isso é o que separa um usuário básico de um analista avançado.
 
 <SqlExercicio
   id="bq-6"

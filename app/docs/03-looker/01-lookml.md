@@ -13,23 +13,6 @@ Todo o código LookML fica em um repositório Git — cada alteração é versio
 
 ## Estrutura do Projeto
 
-```
-meu_modelo_financeiro/
-├── manifest.lkml              # Configuração do projeto
-├── model/
-│   ├── dre.model.lkml         # Modelo principal (explores)
-│   └── balanco.model.lkml
-├── views/
-│   ├── lancamentos_contabeis.view.lkml
-│   ├── plano_contas.view.lkml
-│   ├── centros_custo.view.lkml
-│   └── dre_resultado.view.lkml
-├── includes/
-│   └── parametros_financeiros.lkml
-└── dashboards/
-    └── dre_dashboard.lookml
-```
-
 ```mermaid
 graph TD
     subgraph meu_modelo_financeiro

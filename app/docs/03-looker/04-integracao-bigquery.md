@@ -391,6 +391,19 @@ ERPs / Sistemas Legados
    Looker - Dashboards (consumo)
 ```
 
+```mermaid
+flowchart TD
+    SRC[ERPs / Sistemas Legados]
+    ORCH[Apache Airflow / Cloud Composer]
+    RAW[BigQuery - Raw Layer<br/>dados brutos, imutáveis]
+    STG[BigQuery - Staging Layer<br/>limpeza, tipagem, dedup]
+    ANA[BigQuery - Analytics Layer<br/>agregados, star schemas]
+    LKML[Looker - LookML Views<br/>camada semântica]
+    DSH[Looker - Dashboards<br/>consumo]
+
+    SRC --> ORCH --> RAW --> STG --> ANA --> LKML --> DSH
+```
+
 ## Custos e Governança
 
 | Ação | Custo | Mitigação |

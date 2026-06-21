@@ -43,6 +43,30 @@ Usuário                          Consumidor
 [ BigQuery / Banco de Dados ]    [Tabelas físicas]
 ```
 
+```mermaid
+flowchart LR
+    subgraph Usuário
+        A[Looks / Dashboards / Explorer]
+    end
+    subgraph Consumidor
+        B[Métricas de negócio]
+    end
+    subgraph Modelo
+        C[LookML - Modelo Semântico]
+    end
+    subgraph Camada
+        D[Regras centralizadas]
+    end
+    subgraph Dados
+        E[BigQuery / Banco de Dados]
+    end
+    subgraph Físico
+        F[Tabelas físicas]
+    end
+    A --> C --> E
+    B --> D --> F
+```
+
 ## Fluxo de Trabalho na Controladoria
 
 1. **Engenheiro de dados** -> Modela tabelas no BigQuery (lançamentos, plano de contas, centros de custo)

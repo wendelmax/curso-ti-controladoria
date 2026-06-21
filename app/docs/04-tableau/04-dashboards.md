@@ -65,24 +65,6 @@ Antes de montar o dashboard, crie cada visualização como uma planilha:
 
 Containers são os blocos de construção do layout.
 
-```
-Container Horizontal → itens lado a lado
-  │
-  ├── kpi_receita
-  ├── kpi_despesa
-  ├── kpi_margem
-  └── kpi_ebitda
-
-Container Vertical → itens empilhados
-  │
-  ├── Header (texto)
-  ├── Container Horizontal (KPIs)
-  ├── rec_desp_mensal
-  └── Container Horizontal
-       ├── treemap_despesas
-       └── top_clientes
-```
-
 ```mermaid
 block-beta
   columns 1

@@ -42,14 +42,12 @@ END
 
 O Gantt cria o efeito "cascata": cada barra começa onde a anterior terminou, mostrando o acúmulo.
 
-```
-Visualização esperada (valores ilustrativos):
-         ████ Receita Bruta (R$ 10M)
-           ██ Deduções (R$ -1,5M)
-         ██████ Receita Líquida (R$ 8,5M)
-            ███ CMV (R$ -3M)
-         ████████ Margem Bruta (R$ 5,5M)
-              ████████ ...
+```mermaid
+xychart-beta
+  title "DRE - Waterfall"
+  x-axis ["Receita Bruta", "Deduções", "Receita Líquida", "CMV", "Margem Bruta"]
+  y-axis "Valor (R$)" 0 --> 12
+  bar [10, -1.5, 8.5, -3, 5.5]
 ```
 
 ## 2. Receita vs Despesa — Comparação Mês a Mês
@@ -132,21 +130,21 @@ Visualizar a composição do ativo/passivo em um único gráfico, identificando 
 6. Filtro: [categoria_dre] contém "Ativo" ou "Passivo"
 ```
 
-```
-Resultado visual:
-┌──────────────────────────────────────┐
-│  ████████████████                    │
-│  ██ Caixa ██████ Contas a █████████  │
-│  █████████ Receber ████████          │
-│  ████ ████████████████               │
-│  ███ Estoques ██████████████         │
-│  ████████████████████████████████    │
-│  ████████ Imobilizado █████████████  │
-│  ──────────────────────────────────  │
-│  ██████████ Fornecedores █████████   │
-│  ████████████████████                │
-│  ████████ Dívidas █████████████      │
-└──────────────────────────────────────┘
+```mermaid
+block-beta
+  columns 4
+  block:Ativo
+    columns 2
+    Caixa Contas_a_Receber
+    Estoques Imobilizado
+  end
+  block:Passivo
+    columns 2
+    Fornecedores Dívidas
+  end
+end
+
+Treemap visual: ativo (azul) ocupa área proporcional ao valor de cada conta; passivo (laranja) abaixo.
 ```
 
 ## 5. Gráfico de Barras por Idade (Aging)
@@ -201,15 +199,13 @@ Comparar valor realizado vs meta vs benchmark em um único gráfico compacto.
 
 ### Como construir
 
-```tableau
+```
 Passo 1: Estrutura de dados necessária
-┌──────────────┬──────────┬───────┐
-│ kpi          │ tipo     │ valor │
-├──────────────┼──────────┼───────┤
-│ Margem Bruta │ Real     │ 0.32  │
-│ Margem Bruta │ Meta     │ 0.35  │
-│ Margem Bruta │ Benchmark│ 0.30  │
-└──────────────┴──────────┴───────┘
+  | kpi          | tipo     | valor |
+  |--------------|----------|-------|
+  | Margem Bruta | Real     | 0.32  |
+  | Margem Bruta | Meta     | 0.35  |
+  | Margem Bruta | Benchmark| 0.30  |
 ```
 
 ```tableau
@@ -240,15 +236,16 @@ Identificar padrões de gastos: quais departamentos gastam mais e em quais meses
 
 ```
 Visualização esperada:
-           Jan   Fev   Mar   Abr   Mai   Jun
-Finanças   ■■■   ■■    ■■■■  ■     ■■    ■■■
-RH         ■     ■■    ■     ■■■   ■     ■■
-TI         ■■■■  ■■■■  ■■■■  ■■■■  ■■■■  ■■■■
-Comercial  ■■    ■■    ■■    ■■    ■■    ■■
-Operações  ■■■   ■     ■■    ■■    ■■■   ■
 
-(Cor mais escura = maior despesa)
+```mermaid
+xychart-beta
+  title "Despesas por Departamento × Mês"
+  x-axis ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"]
+  y-axis "Departamento"
+  bar [80, 40, 90, 20, 50, 70]
 ```
+
+Cor mais escura = maior despesa.
 
 ## Exercícios Práticos
 

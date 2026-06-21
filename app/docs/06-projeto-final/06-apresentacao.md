@@ -26,14 +26,16 @@ Consolidar todo o trabalho em uma apresentação executiva simulando uma reuniã
 
 ### Slide 4: DRE do Semestre
 Gráfico waterfall mostrando:
+
+```mermaid
+xychart-beta
+  title "DRE do Semestre"
+  x-axis ["Receita Líquida", "CPV", "Lucro Bruto", "Desp. Operac.", "Desp. Tribut.", "Resultado"]
+  y-axis "Valor (R$)" 0 --> 1600
+  bar [1562, -508, 1054, -594, -115, 346]
 ```
-Receita Líquida    → R$ 1.562.200
-(-) CPV            → R$ 508.000  (32,5%)
-(=) Lucro Bruto    → R$ 1.054.200 (67,5%)
-(-) Desp. Operac.  → R$ 593.500  (38,0%)
-(-) Desp. Tribut.  → R$ 115.000  (7,4%)
-(=) Resultado      → R$ 345.700  (22,1%)
-```
+
+Receita Líquida R$ 1.562.200 | CPV R$ 508.000 (32,5%) | Lucro Bruto R$ 1.054.200 (67,5%) | Desp. Operac. R$ 593.500 (38,0%) | Desp. Tribut. R$ 115.000 (7,4%) | Resultado R$ 345.700 (22,1%)
 
 ### Slide 5: Fluxo de Caixa
 - Saldo atual: R$ 85.000 (estimado)

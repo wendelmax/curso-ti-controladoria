@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SchemaDiagramModal from '../SchemaDiagramModal';
 
 const SCHEMA = [
   {
@@ -150,6 +151,7 @@ const SCHEMA = [
 
 export default function SchemaExplorer({ onTableClick, onColumnClick }) {
   const [expandedTables, setExpandedTables] = useState(new Set());
+  const [showDiagram, setShowDiagram] = useState(false);
 
   const toggleTable = (tableName) => {
     const next = new Set(expandedTables);
@@ -162,7 +164,16 @@ export default function SchemaExplorer({ onTableClick, onColumnClick }) {
     <div className="schema-explorer">
       <div className="schema-explorer-header">
         <span>&#128218;</span> Banco de Dados
+        <button onClick={() => setShowDiagram(true)} title="Ver diagrama do banco"
+          style={{
+            marginLeft: 'auto', padding: '0.1rem 0.4rem', border: '1px solid var(--ifm-color-emphasis-300)',
+            borderRadius: '4px', background: 'transparent', cursor: 'pointer',
+            fontSize: '0.7rem', color: 'var(--ifm-color-emphasis-600)',
+          }}>
+          &#128279; Diagrama
+        </button>
       </div>
+      <SchemaDiagramModal open={showDiagram} onClose={() => setShowDiagram(false)} />
       <div className="schema-explorer-content">
         {SCHEMA.map((table) => (
           <React.Fragment key={table.name}>

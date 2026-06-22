@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const VIZ_API = 'https://public.tableau.com/javascripts/api/tableau-2.min.js';
-
 const DASHBOARDS = [
   {
     id: 'dre',
@@ -34,77 +32,30 @@ const DASHBOARDS = [
 ];
 
 function TableauEmbed({ dashboard, active }) {
-  const containerRef = useRef(null);
-  const vizRef = useRef(null);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    if (!active || !containerRef.current) return;
-
-    const initViz = () => {
-      const options = {
-        width: '100%',
-        height: `${dashboard.height}px`,
-        hideTabs: true,
-        hideToolbar: false,
-      };
-
-      const vizUrl = `https://public.tableau.com/views/${dashboard.name}?:embed=y&:showVizHome=no&:display_count=no`;
-
-      try {
-        if (vizRef.current) {
-          vizRef.current.dispose();
-        }
-        vizRef.current = new window.tableau.Viz(
-          containerRef.current,
-          vizUrl,
-          options
-        );
-        setLoaded(true);
-      } catch (e) {
-        console.error("Erro ao inicializar Tableau viz:", e);
-        setLoaded(false);
-      }
-    };
-
-    if (window.tableau) {
-      initViz();
-    } else {
-      let script = document.querySelector(`script[src="${VIZ_API}"]`);
-      if (!script) {
-        script = document.createElement('script');
-        script.src = VIZ_API;
-        script.async = true;
-        document.body.appendChild(script);
-      }
-      script.addEventListener('load', initViz);
-      return () => {
-        script.removeEventListener('load', initViz);
-        if (vizRef.current) {
-          try { vizRef.current.dispose(); } catch {}
-          vizRef.current = null;
-        }
-      };
-    }
-
-    return () => {
-      if (vizRef.current) {
-        try { vizRef.current.dispose(); } catch {}
-        vizRef.current = null;
-      }
-    };
-  }, [active, dashboard]);
+  const vizUrl = `https://public.tableau.com/views/${dashboard.name}?:embed=y&:showVizHome=no&:display_count=no`;
 
   return (
     <div
-      ref={containerRef}
       style={{
         width: '100%',
         height: active ? `${dashboard.height}px` : '0',
         overflow: 'hidden',
         transition: 'height 0.3s',
       }}
-    />
+    >
+      {active && (
+        <iframe
+          src={vizUrl}
+          title={dashboard.title}
+          width="100%"
+          height={`${dashboard.height}px`}
+          style={{
+            border: 'none',
+            display: 'block',
+          }}
+        />
+      )}
+    </div>
   );
 }
 

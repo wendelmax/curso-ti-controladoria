@@ -2,31 +2,31 @@ import React, { useState, useEffect, useRef } from 'react';
 
 const DASHBOARDS = [
   {
-    id: 'dre',
-    title: 'Dashboard de DRE Interativo',
+    id: 'financeiro',
+    title: 'Análise Financeira',
     description: 'Demonstração do Resultado do Exercício — visualize receitas, despesas e resultado líquido.',
     hostUrl: 'https%3A%2F%2Fpublic.tableau.com%2F',
     name: 'AnliseFinanceira/Dashboard2',
-    height: 600,
-    guide: [
-      'Qual mês apresentou o maior faturamento?',
-      'Identifique qual despesa tem o maior peso sobre a receita',
-      'A margem líquida melhorou ou piorou ao longo dos meses?',
-      'Que insight você daria ao CFO baseado neste dashboard?',
-    ],
-  },
-  {
-    id: 'financeiro',
-    title: 'Análise de Resultados',
-    description: 'Demonstração de Resultados interativa com indicadores financeiros e comparativos.',
-    hostUrl: 'https%3A%2F%2Fpublic.tableau.com%2F',
-    name: 'DemonstraodeResultados/Dashboard1',
     height: 600,
     guide: [
       'Qual o resultado líquido acumulado no período?',
       'Quais contas mais contribuíram para o resultado?',
       'Existe sazonalidade nas receitas?',
       'Se você fosse apresentar este DRE ao conselho, quais 3 pontos destacaria?',
+    ],
+  },
+  {
+    id: 'dre',
+    title: 'Dashboard de DRE Interativo',
+    description: 'Demonstração de Resultados interativa com indicadores financeiros e comparativos.',
+    hostUrl: 'https%3A%2F%2Fpublic.tableau.com%2F',
+    name: 'DemonstraodeResultados/Dashboard1',
+    height: 600,
+    guide: [
+      'Qual mês apresentou o maior faturamento?',
+      'Identifique qual despesa tem o maior peso sobre a receita',
+      'A margem líquida melhorou ou piorou ao longo dos meses?',
+      'Que insight você daria ao CFO baseado neste dashboard?',
     ],
   },
 ];

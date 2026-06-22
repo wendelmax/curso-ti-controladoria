@@ -82,6 +82,29 @@ export default function SqlPlayground() {
     }
   }, [db]);
 
+  const exportCSV = useCallback(() => {
+    if (!results || results.length === 0) return;
+    const r = results[0];
+    const header = r.columns.join(',');
+    const rows = r.values.map(row =>
+      row.map(v => {
+        if (v === null || v === undefined) return '';
+        const s = String(v);
+        return s.includes(',') || s.includes('"') || s.includes('\n')
+          ? `"${s.replace(/"/g, '""')}"`
+          : s;
+      }).join(',')
+    );
+    const csv = [header, ...rows].join('\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `consulta_${new Date().toISOString().slice(0, 19).replace(/[T:]/g, '-')}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [results]);
+
   const handleKeyDown = useCallback((e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       executeQuery();
@@ -246,79 +269,93 @@ export default function SqlPlayground() {
       <div className="playground-layout">
         <SchemaExplorer />
 
-        <div className="playground-editor-panel">
-          <div className="playground-editor-header">
-            <span>&#128221; Editor SQL</span>
-            {executionTime && (
-              <span style={{ fontWeight: 400, fontSize: '0.8rem' }}>
-                {executionTime}s
-              </span>
-            )}
+        <div className="playground-right">
+          <div className="playground-editor-panel">
+            <div className="playground-editor-header">
+              <span>&#128221; Editor SQL</span>
+              {executionTime && (
+                <span style={{ fontWeight: 400, fontSize: '0.8rem' }}>
+                  {executionTime}s
+                </span>
+              )}
+            </div>
+            <div className="playground-editor-wrapper">
+              <Editor
+                height="100%"
+                defaultLanguage="sql"
+                defaultValue={`-- Digite sua query aqui\nSELECT * FROM empresas LIMIT 10;`}
+                theme="cursoTheme"
+                beforeMount={handleEditorWillMount}
+                onMount={handleEditorDidMount}
+                options={{
+                  fontSize: 14,
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                  lineNumbers: 'on',
+                  renderLineHighlight: 'line',
+                  automaticLayout: true,
+                  suggestOnTriggerCharacters: true,
+                  wordBasedSuggestions: false,
+                  tabSize: 2,
+                }}
+              />
+            </div>
           </div>
-          <div className="playground-editor-wrapper">
-            <Editor
-              height="100%"
-              defaultLanguage="sql"
-              defaultValue={`-- Digite sua query aqui\nSELECT * FROM empresas LIMIT 10;`}
-              theme="cursoTheme"
-              beforeMount={handleEditorWillMount}
-              onMount={handleEditorDidMount}
-              options={{
-                fontSize: 14,
-                minimap: { enabled: false },
-                scrollBeyondLastLine: false,
-                lineNumbers: 'on',
-                renderLineHighlight: 'line',
-                automaticLayout: true,
-                suggestOnTriggerCharacters: true,
-                wordBasedSuggestions: false,
-                tabSize: 2,
-              }}
-            />
-          </div>
-        </div>
 
-        <div className="playground-results-panel">
-          <div className="playground-results-header">
-            <span>&#128200; Resultados</span>
-            {results && results.length > 0 && (
-              <span style={{ fontWeight: 400, fontSize: '0.8rem' }}>
-                {results[0].values.length} linha(s)
-              </span>
-            )}
-            {error && <span style={{ color: 'var(--ifm-color-danger)' }}>Erro</span>}
-          </div>
-          <div className="playground-results-content">
-            {error && <div className="playground-error">{error}</div>}
-            {!error && results && results.length > 0 && (
-              <table>
-                <thead>
-                  <tr>
-                    {results[0].columns.map((col, i) => (
-                      <th key={i}>{col}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {results[0].values.map((row, i) => (
-                    <tr key={i}>
-                      {row.map((val, j) => (
-                        <td key={j}>{formatValue(val)}</td>
+          <div className="playground-results-panel">
+            <div className="playground-results-header">
+              <span>&#128200; Resultados</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                {results && results.length > 0 && (
+                  <>
+                    <span style={{ fontWeight: 400, fontSize: '0.8rem' }}>
+                      {results[0].values.length} linha(s)
+                    </span>
+                    <button onClick={exportCSV} title="Exportar CSV"
+                      style={{
+                        padding: '0.15rem 0.5rem', border: '1px solid var(--ifm-color-emphasis-300)',
+                        borderRadius: '4px', background: 'transparent', cursor: 'pointer',
+                        fontSize: '0.75rem', color: 'var(--ifm-color-emphasis-700)',
+                      }}>
+                      📥 CSV
+                    </button>
+                  </>
+                )}
+                {error && <span style={{ color: 'var(--ifm-color-danger)' }}>Erro</span>}
+              </div>
+            </div>
+            <div className="playground-results-content">
+              {error && <div className="playground-error">{error}</div>}
+              {!error && results && results.length > 0 && (
+                <table>
+                  <thead>
+                    <tr>
+                      {results[0].columns.map((col, i) => (
+                        <th key={i}>{col}</th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-            {!error && (!results || results.length === 0) && (
-              <div className="playground-empty">
-                Execute uma query para ver os resultados aqui.
-                <br />
-                <small>
-                  Exemplo: <code>SELECT * FROM empresas LIMIT 5;</code>
-                </small>
-              </div>
-            )}
+                  </thead>
+                  <tbody>
+                    {results[0].values.map((row, i) => (
+                      <tr key={i}>
+                        {row.map((val, j) => (
+                          <td key={j}>{formatValue(val)}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+              {!error && (!results || results.length === 0) && (
+                <div className="playground-empty">
+                  Execute uma query para ver os resultados aqui.
+                  <br />
+                  <small>
+                    Exemplo: <code>SELECT * FROM empresas LIMIT 5;</code>
+                  </small>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

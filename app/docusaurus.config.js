@@ -45,7 +45,18 @@ module.exports = {
       title: 'TI para Controladoria',
       items: [
         { to: '/curso/intro/', label: 'Curso', position: 'left' },
-        { to: '/playground', label: 'SQL Playground', position: 'left' },
+        {
+          type: 'dropdown',
+          label: 'Playgrounds',
+          position: 'left',
+          items: [
+            { to: '/playground', label: 'SQL' },
+            { to: '/bq-playground', label: 'BigQuery' },
+            { to: '/curso/looker/exercicios', label: 'Looker' },
+            { to: '/curso/tableau/exercicios', label: 'Tableau' },
+            { to: '/curso/ia/exercicios', label: 'IA' },
+          ],
+        },
         { to: '/notas', label: 'Notas', position: 'left' },
         { to: '/login', label: 'Entrar', position: 'right' },
         {

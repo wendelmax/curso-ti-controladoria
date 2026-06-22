@@ -312,6 +312,22 @@ export default function BQPlayground() {
       },
       triggerCharacters: [' ', ','],
     });
+
+    monaco.editor.defineTheme('cursoTheme', {
+      base: 'vs',
+      inherit: true,
+      rules: [
+        { token: 'keyword', foreground: '0000FF', fontStyle: 'bold' },
+        { token: 'type', foreground: '267f99' },
+        { token: 'string', foreground: 'a31515' },
+        { token: 'comment', foreground: '008000', fontStyle: 'italic' },
+        { token: 'number', foreground: '098658' },
+      ],
+      colors: {
+        'editorLineNumber.foreground': '#999999',
+        'editorCursor.foreground': '#1a73e8',
+      },
+    });
   }
 
   const samples = bqMode ? SAMPLES_BQ : SAMPLES_STANDARD;

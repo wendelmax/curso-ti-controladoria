@@ -15,8 +15,12 @@ import LookMLEditor from '@site/src/components/LookMLEditor';
 
 ## Exercícios Conceituais — Teste seu entendimento
 
-:::question 1 — Dimensão vs. Medida
+<details style={{ marginBottom: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px', padding: '1rem', background: 'var(--ifm-color-emphasis-0)' }}>
+<summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem', color: 'var(--ifm-color-primary)' }}>
+📝 Pergunta 1 — Dimensão vs. Medida
+</summary>
 **Qual a diferença entre uma `dimension` e uma `measure` no LookML?**
+
 <details>
 <summary>Ver resposta</summary>
 
@@ -26,28 +30,40 @@ import LookMLEditor from '@site/src/components/LookMLEditor';
 
 Traduzindo para planilha: a dimension é o **cabeçalho da linha** ("Receita", "Despesa"), a measure é o **valor na célula** (R$ 1.000,00).
 </details>
-:::
+</details>
 
-:::question 2 — O que é um Explore
+<details style={{ marginBottom: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px', padding: '1rem', background: 'var(--ifm-color-emphasis-0)' }}>
+<summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem', color: 'var(--ifm-color-primary)' }}>
+📝 Pergunta 2 — O que é um Explore
+</summary>
 **O que é um `Explore` no Looker?**
+
 <details>
 <summary>Ver resposta</summary>
 
 É o **ponto de partida** para fazer consultas. Pense no Explore como a "porta de entrada" do restaurante: você entra, olha o cardápio (as dimensões e medidas disponíveis) e faz seu pedido (monta a consulta). Um Explore pode juntar várias views via JOIN.
 </details>
-:::
+</details>
 
-:::question 3 — Para que serve `sql_on`?
+<details style={{ marginBottom: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px', padding: '1rem', background: 'var(--ifm-color-emphasis-0)' }}>
+<summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem', color: 'var(--ifm-color-primary)' }}>
+📝 Pergunta 3 — Para que serve `sql_on`?
+</summary>
 **Para que serve o parâmetro `sql_on` em um JOIN?**
+
 <details>
 <summary>Ver resposta</summary>
 
 Define a **condição de junção** entre duas tabelas, exatamente como o ON do SQL. Exemplo: conectar lançamentos ao plano de contas pelo `id_conta`. É como o **PROCV** do Excel: "pega o valor da coluna X da tabela A e busca o correspondente na tabela B onde o ID é igual".
 </details>
-:::
+</details>
 
-:::question 4 — `sql_table_name` vs `derived_table`
+<details style={{ marginBottom: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px', padding: '1rem', background: 'var(--ifm-color-emphasis-0)' }}>
+<summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem', color: 'var(--ifm-color-primary)' }}>
+📝 Pergunta 4 — `sql_table_name` vs `derived_table`
+</summary>
 **Qual a diferença entre `sql_table_name` e `derived_table`?**
+
 <details>
 <summary>Ver resposta</summary>
 
@@ -56,10 +72,14 @@ Define a **condição de junção** entre duas tabelas, exatamente como o ON do 
 
 É como a diferença entre pegar um livro pronto na estante (sql_table_name) e escrever um resumo do livro (derived_table).
 </details>
-:::
+</details>
 
-:::question 5 — O que são PDTs?
+<details style={{ marginBottom: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px', padding: '1rem', background: 'var(--ifm-color-emphasis-0)' }}>
+<summary style={{ cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem', color: 'var(--ifm-color-primary)' }}>
+📝 Pergunta 5 — O que são PDTs?
+</summary>
 **O que são Persistent Derived Tables (PDTs)?**
+
 <details>
 <summary>Ver resposta</summary>
 
@@ -67,7 +87,7 @@ São "tabelas rascunho" que o Looker **materializa (salva) no BigQuery** para ac
 
 Pense como a **prévia do fechamento mensal**: você calcula os saldos uma vez e consulta várias vezes.
 </details>
-:::
+</details>
 
 ## Prática com o Editor de LookML
 

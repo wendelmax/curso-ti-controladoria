@@ -144,14 +144,6 @@ WHERE id_conta_pai IS NOT NULL
 LIMIT 10;
 ```
 
-## Exercícios Práticos
-
-1. Liste as contas a pagar com valor > 50.000 que estão abertas
-2. Mostre clientes de SP ou RJ com segmento 'Varejo'
-3. Encontre contas do plano que começam com '5' (despesas)
-4. Liste funcionários com salário entre 5.000 e 15.000 do Financeiro
-5. Mostre faturas com status 'aberto' e valor líquido > 50.000
-
 ## Para fixar
 
 - **WHERE** = o filtro do SQL (como o ícone de funil no Excel)
@@ -160,28 +152,6 @@ LIMIT 10;
 - **LIKE** + `%` = busca por pedaço de texto (tipo "contém" no Excel)
 - **IS NULL** = procura células vazias
 
-import SqlExercicio from '@site/src/components/SqlExercicio'
-
-<SqlExercicio
-  id="filt-1"
-  prompt="Liste todos os funcionários do departamento Financeiro com salário acima de R$ 10.000. Mostre nome, cargo, salario e departamento."
-  hint="WHERE departamento = 'Financeiro' AND salario > 10000"
-  table="funcionarios"
-  expectedSql="SELECT nome, cargo, salario, departamento FROM funcionarios WHERE departamento = 'Financeiro' AND salario > 10000"
-/>
-
-<SqlExercicio
-  id="filt-2"
-  prompt="Encontre os clientes que estão em SP ou RJ. Mostre nome, cidade e UF."
-  hint="WHERE uf IN ('SP', 'RJ') ou WHERE uf = 'SP' OR uf = 'RJ'"
-  table="clientes"
-  expectedSql="SELECT nome, cidade, uf FROM clientes WHERE uf IN ('SP', 'RJ')"
-/>
-
-<SqlExercicio
-  id="filt-3"
-  prompt="Liste as contas do plano de contas que começam com o código '5' (despesas). Mostre codigo e descricao."
-  hint="WHERE codigo LIKE '5%'"
-  table="planos_contas"
-  expectedSql="SELECT codigo, descricao FROM planos_contas WHERE codigo LIKE '5%'"
-/>
+:::tip 🚀 Quer praticar?
+Vá para o **[Laboratório do Módulo 1](./exercicios)** e treine filtros WHERE com exercícios interativos.
+:::

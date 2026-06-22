@@ -171,20 +171,6 @@ FROM fat_mensal;
 - **SUM() OVER** = soma acumulada (como arrastar fórmula no Excel)
 - **LAG/LEAD** = compara com linha anterior/seguinte
 
-import SqlExercicio from '@site/src/components/SqlExercicio'
-
-<SqlExercicio
-  id="win-1"
-  prompt="Crie um ranking de clientes por total de vendas (use ROW_NUMBER). Mostre nome, total_vendas e ranking."
-  hint="ROW_NUMBER() OVER (ORDER BY SUM(valor_liquido) DESC)"
-  table="faturamento"
-  expectedSql="SELECT c.nome, SUM(f.valor_liquido) AS total_vendas, ROW_NUMBER() OVER (ORDER BY SUM(f.valor_liquido) DESC) AS ranking FROM faturamento f INNER JOIN clientes c ON f.id_cliente = c.id_cliente GROUP BY c.nome"
-/>
-
-<SqlExercicio
-  id="win-2"
-  prompt="Calcule o faturamento acumulado (YTD) mês a mês. Mostre mes, receita e receita_acumulada."
-  hint="SUM(receita) OVER (ORDER BY mes) com CTE mensal"
-  table="faturamento"
-  expectedSql="WITH fat_mensal AS (SELECT strftime('%Y-%m', data_emissao) AS mes, SUM(valor_liquido) AS receita FROM faturamento GROUP BY mes) SELECT mes, receita, SUM(receita) OVER (ORDER BY mes) AS receita_acumulada FROM fat_mensal"
-/>
+:::tip 🚀 Quer praticar?
+Vá para o **[Laboratório do Módulo 1](./exercicios)** e treine window functions com exercícios interativos.
+:::

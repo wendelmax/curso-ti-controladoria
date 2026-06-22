@@ -123,43 +123,12 @@ ORDER BY  -- 6. ordenar
 LIMIT;    -- 7. limitar
 ```
 
-## Exercícios Práticos
-
-1. Qual o total de contas a receber por status?
-2. Qual a média salarial por departamento?
-3. Quantos clientes existem por UF?
-4. Qual o valor total de impostos a recolher por tipo de imposto?
-5. Quais clientes tiveram mais de 2 notas fiscais emitidas?
-6. Qual o total de vendas (valor líquido) por mês?
-
 ## Para fixar
 
 - **GROUP BY** = tabela dinâmica do SQL: agrupa linhas iguais e aplica contas
 - **SUM** = soma, **AVG** = média, **COUNT** = contagem, **MAX/MIN** = maior/menor
 - **WHERE** filtra **antes** de agrupar; **HAVING** filtra **depois** de agrupar
 
-import SqlExercicio from '@site/src/components/SqlExercicio'
-
-<SqlExercicio
-  id="agr-1"
-  prompt="Calcule o total de vendas (valor_liquido) por cliente, ordenando do maior para o menor."
-  hint="Use GROUP BY id_cliente com SUM(valor_liquido) e ORDER BY total DESC"
-  table="faturamento"
-  expectedSql="SELECT id_cliente, SUM(valor_liquido) AS total_vendas FROM faturamento GROUP BY id_cliente ORDER BY total_vendas DESC"
-/>
-
-<SqlExercicio
-  id="agr-2"
-  prompt="Conte quantos funcionários existem em cada departamento e mostre a média salarial."
-  hint="GROUP BY departamento com COUNT(*) e AVG(salario)"
-  table="funcionarios"
-  expectedSql="SELECT departamento, COUNT(*) AS qtd_funcionarios, AVG(salario) AS media_salarial FROM funcionarios GROUP BY departamento"
-/>
-
-<SqlExercicio
-  id="agr-3"
-  prompt="Qual o total de contas a receber por status (aberto vs recebido)?"
-  hint="GROUP BY status com SUM(valor)"
-  table="contas_receber"
-  expectedSql="SELECT status, SUM(valor) AS total FROM contas_receber GROUP BY status"
-/>
+:::tip 🚀 Quer praticar?
+Vá para o **[Laboratório do Módulo 1](./exercicios)** e treine GROUP BY com exercícios interativos.
+:::

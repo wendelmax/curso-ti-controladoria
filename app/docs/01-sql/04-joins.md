@@ -147,14 +147,6 @@ LEFT JOIN folha_pagamento fp ON f.id_funcionario = fp.id_funcionario
 WHERE fp.id_folha IS NULL;
 ```
 
-## Exercícios Práticos
-
-1. Liste todas as notas fiscais de saída com o nome do cliente e valor do imposto
-2. Mostre os lançamentos contábeis de janeiro com a descrição da conta e centro de custo
-3. Para cada conta a receber, mostre o nome do cliente e dias até o vencimento
-4. Liste todos os clientes com suas respectivas faturas (inclusive clientes sem fatura)
-5. Monte uma query que retorne: empresa, conta contábil, valor e mês — para todas as contas de despesa (código começando com '5')
-
 ## Para fixar
 
 - **INNER JOIN** = só traz quando tem correspondência (como PROCV com `FALSO`)
@@ -162,20 +154,6 @@ WHERE fp.id_folha IS NULL;
 - **Sempre** use a cláusula **ON** para dizer como as tabelas se relacionam
 - Use **aliases** (`FROM faturamento f`) para não repetir nome de tabela
 
-import SqlExercicio from '@site/src/components/SqlExercicio'
-
-<SqlExercicio
-  id="join-1"
-  prompt="Liste as notas fiscais de saída (tipo = 'saida') com o nome do cliente (use a tabela notas_fiscais com clientes via id_cliente_fornecedor = id_cliente)."
-  hint="INNER JOIN clientes ON nf.id_cliente_fornecedor = c.id_cliente WHERE tipo = 'saida'"
-  table="notas_fiscais"
-  expectedSql="SELECT nf.numero, nf.data_emissao, c.nome AS cliente, nf.base_calculo, nf.valor_imposto FROM notas_fiscais nf INNER JOIN clientes c ON nf.id_cliente_fornecedor = c.id_cliente WHERE nf.tipo = 'saida'"
-/>
-
-<SqlExercicio
-  id="join-2"
-  prompt="Mostre os lançamentos contábeis com a descrição da conta e centro de custo. Limite a 15 resultados."
-  hint="JOIN planos_contas e centros_custo"
-  table="lancamentos_contabeis"
-  expectedSql="SELECT l.id_lancamento, l.valor, l.debito_credito, p.descricao AS conta, cc.descricao AS centro_custo FROM lancamentos_contabeis l INNER JOIN planos_contas p ON l.id_conta = p.id_conta INNER JOIN centros_custo cc ON l.id_centro_custo = cc.id_centro_custo LIMIT 15"
-/>
+:::tip 🚀 Quer praticar?
+Vá para o **[Laboratório do Módulo 1](./exercicios)** e treine JOINs com exercícios interativos.
+:::

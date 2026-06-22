@@ -202,34 +202,12 @@ SELECT * FROM cte1
 JOIN cte2 ON ...;
 ```
 
-## Exercícios Práticos
-
-1. Encontre funcionários com salário acima da média do seu departamento
-2. Liste os 3 fornecedores com maior valor total em contas a pagar
-3. Calcule o % de cada despesa sobre a receita total do mês (use CTEs)
-4. Mostre clientes que nunca faturaram (use LEFT JOIN + IS NULL)
-5. Crie uma query que retorne mês, receita total, custo total e margem bruta (%)
-
 ## Para fixar
 
 - **Subquery** = uma consulta dentro de outra (resolve aninhado, como fórmula composta no Excel)
 - **CTE (WITH)** = mesma ideia, mas mais organizada: você dá nome a cada etapa
 - CTEs são sempre preferíveis para queries complexas — mais fáceis de ler e dar manutenção
 
-import SqlExercicio from '@site/src/components/SqlExercicio'
-
-<SqlExercicio
-  id="cte-1"
-  prompt="Encontre os funcionários que ganham acima da média salarial de todos os funcionários. Mostre nome, cargo e salario."
-  hint="Use subquery: WHERE salario > (SELECT AVG(salario) FROM funcionarios)"
-  table="funcionarios"
-  expectedSql="SELECT nome, cargo, salario FROM funcionarios WHERE salario > (SELECT AVG(salario) FROM funcionarios)"
-/>
-
-<SqlExercicio
-  id="cte-2"
-  prompt="Use uma CTE para listar o total de vendas por cliente, mostrando o nome do cliente e o total, ordenado do maior total."
-  hint="WITH fat_por_cliente AS (SELECT c.nome, SUM(f.valor_liquido) AS total FROM faturamento f JOIN clientes c ON f.id_cliente = c.id_cliente GROUP BY c.nome)"
-  table="faturamento"
-  expectedSql="WITH fat_por_cliente AS (SELECT c.nome, SUM(f.valor_liquido) AS total FROM faturamento f INNER JOIN clientes c ON f.id_cliente = c.id_cliente GROUP BY c.nome) SELECT * FROM fat_por_cliente ORDER BY total DESC"
-/>
+:::tip 🚀 Quer praticar?
+Vá para o **[Laboratório do Módulo 1](./exercicios)** e treine subqueries e CTEs com exercícios interativos.
+:::

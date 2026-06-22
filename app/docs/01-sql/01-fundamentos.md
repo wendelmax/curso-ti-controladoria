@@ -96,44 +96,6 @@ SELECT * FROM empresas;  -- comentário no final
 */
 ```
 
-## Exercícios Práticos
-
-Antes de prosseguir, pratique os conceitos abaixo no editor interativo.
-
-import SqlExercicio from '@site/src/components/SqlExercicio'
-
-<SqlExercicio
-  id="fund-1"
-  prompt="Liste todos os fornecedores mostrando as colunas: nome, cidade e UF."
-  hint="Use SELECT nome, cidade, uf FROM fornecedores"
-  table="fornecedores"
-  expectedSql="SELECT nome, cidade, uf FROM fornecedores"
-/>
-
-<SqlExercicio
-  id="fund-2"
-  prompt="Mostre os 5 primeiros clientes ordenados por nome (ordem alfabética)."
-  hint="SELECT * FROM clientes ORDER BY nome LIMIT 5"
-  table="clientes"
-  expectedSql="SELECT * FROM clientes ORDER BY nome LIMIT 5"
-/>
-
-<SqlExercicio
-  id="fund-3"
-  prompt="Liste os 10 maiores salários do banco, mostrando nome, cargo e salário."
-  hint="Use ORDER BY salario DESC e LIMIT 10"
-  table="funcionarios"
-  expectedSql="SELECT nome, cargo, salario FROM funcionarios ORDER BY salario DESC LIMIT 10"
-/>
-
-<SqlExercicio
-  id="fund-4"
-  prompt="Selecione os cargos distintos dos funcionários (sem repetições)."
-  hint="Use SELECT DISTINCT cargo FROM funcionarios"
-  table="funcionarios"
-  expectedSql="SELECT DISTINCT cargo FROM funcionarios"
-/>
-
 ## Para fixar
 
 - **SELECT** = escolha as colunas que você quer ver (como marcar colunas no Excel)
@@ -141,6 +103,10 @@ import SqlExercicio from '@site/src/components/SqlExercicio'
 - **LIMIT** = quantas linhas você quer ver (seu controle de "só os primeiros")
 - **ORDER BY** = em que ordem mostrar
 - **DISTINCT** = sem repetições, tipo "resumir" no Excel
+
+:::tip 🚀 Quer praticar?
+Vá para o **[Laboratório do Módulo 1](./exercicios)** e treine esses conceitos com exercícios interativos com correção automática.
+:::
 
 Desafio extra (sem verificação automática — teste no SQL Playground geral):
 1. Selecione o código e descrição do plano de contas de nível 3 (analíticas)

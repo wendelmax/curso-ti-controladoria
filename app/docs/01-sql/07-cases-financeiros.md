@@ -180,20 +180,6 @@ ORDER BY p.codigo;
 - A diferença é que agora você está **combinando** esses conceitos para resolver problemas reais
 - No começo parece difícil, mas com prática cada query fica mais natural — como montar uma fórmula contábil
 
-import SqlExercicio from '@site/src/components/SqlExercicio'
-
-<SqlExercicio
-  id="case-1"
-  prompt="Crie um aging de contas a receber. Mostre nome do cliente, valor, dias vencido e faixa (A Vencer / Vencido). Use a data de referência '2026-06-30'."
-  hint="Use CASE WHEN com JULIANDAY para calcular dias"
-  table="contas_receber"
-  expectedSql="SELECT c.nome AS cliente, cr.valor, cr.data_vencimento, CAST(JULIANDAY('2026-06-30') - JULIANDAY(cr.data_vencimento) AS INTEGER) AS dias_vencido, CASE WHEN JULIANDAY('2026-06-30') - JULIANDAY(cr.data_vencimento) <= 0 THEN 'A Vencer' ELSE 'Vencido' END AS faixa FROM contas_receber cr INNER JOIN clientes c ON cr.id_cliente = c.id_cliente WHERE cr.status = 'aberto' ORDER BY dias_vencido DESC"
-/>
-
-<SqlExercicio
-  id="case-2"
-  prompt="Calcule a margem bruta percentual de cada produto/serviço vendido. Mostre produto_servico, receita_liquida e margem. A margem é (valor_liquido / valor_total * 100)."
-  hint="AVG(valor_liquido / valor_total * 100) agrupado por produto_servico"
-  table="faturamento"
-  expectedSql="SELECT produto_servico, SUM(valor_liquido) AS receita_liquida, ROUND(AVG(valor_liquido * 100.0 / valor_total), 2) AS margem_percentual FROM faturamento GROUP BY produto_servico ORDER BY margem_percentual DESC"
-/>
+:::tip 🚀 Quer praticar?
+Vá para o **[Laboratório do Módulo 1](./exercicios)** e resolva cases financeiros completos com exercícios interativos.
+:::

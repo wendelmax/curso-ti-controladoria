@@ -34,6 +34,7 @@ export default function SqlPlayground() {
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
   const decorationsRef = useRef(null);
+  const executeRef = useRef(null);
   const [db, setDb] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
@@ -75,7 +76,7 @@ export default function SqlPlayground() {
       id: 'execute-query',
       label: 'Executar Query',
       keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
-      run: () => executeQuery(),
+      run: () => executeRef.current?.(),
     });
   }, []);
 
@@ -129,6 +130,7 @@ export default function SqlPlayground() {
       setExecuting(false);
     }
   }, [db]);
+  executeRef.current = executeQuery;
 
   const exportCSV = useCallback(() => {
     if (!results || results.length === 0) return;

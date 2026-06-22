@@ -1,35 +1,101 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-const STEP_ICON = { true: '✅', false: '⬜' };
+const VIZ_API = 'https://public.tableau.com/javascripts/api/viz_v1.js';
 
 const DASHBOARDS = [
   {
     id: 'dre',
     title: 'Dashboard de DRE Interativo',
     description: 'Demonstração do Resultado do Exercício — visualize receitas, despesas e resultado líquido.',
-    vizUrl: 'https://public.tableau.com/views/Superstore_embedded_800x800/Overview',
+    hostUrl: 'https%3A%2F%2Fpublic.tableau.com%2F',
+    name: 'AndreCamalionte/AnliseFinanceira/Dashboard2',
     height: 600,
     guide: [
-      'Encontre o mês com maior receita',
-      'Identifique qual categoria de produto tem a maior margem de lucro',
-      'Qual região geográfica apresenta o menor resultado?',
+      'Qual mês apresentou o maior faturamento?',
+      'Identifique qual despesa tem o maior peso sobre a receita',
+      'A margem líquida melhorou ou piorou ao longo dos meses?',
       'Que insight você daria ao CFO baseado neste dashboard?',
     ],
   },
   {
     id: 'financeiro',
-    title: 'Análise Financeira',
-    description: 'Indicadores financeiros: faturamento, margens, despesas por centro de custo.',
-    vizUrl: 'https://public.tableau.com/views/RegionalSample_168s/Overview',
-    height: 500,
+    title: 'Análise de Resultados',
+    description: 'Demonstração de Resultados interativa com indicadores financeiros e comparativos.',
+    hostUrl: 'https%3A%2F%2Fpublic.tableau.com%2F',
+    name: 'ukiyoe/DemonstraodeResultados/Dashboard1',
+    height: 600,
     guide: [
-      'Qual mês teve o maior faturamento?',
-      'Existe sazonalidade nas vendas? (meses que se repetem todo ano)',
-      'Qual produto/serviço tem a margem mais apertada?',
-      'Se você fosse apresentar este dashboard ao conselho, quais 3 pontos destacaria?',
+      'Qual o resultado líquido acumulado no período?',
+      'Quais contas mais contribuíram para o resultado?',
+      'Existe sazonalidade nas receitas?',
+      'Se você fosse apresentar este DRE ao conselho, quais 3 pontos destacaria?',
     ],
   },
 ];
+
+function TableauEmbed({ dashboard, active }) {
+  const containerRef = useRef(null);
+  const vizRef = useRef(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!active || !containerRef.current || vizRef.current) return;
+
+    const script = document.createElement('script');
+    script.src = VIZ_API;
+    script.async = true;
+
+    script.onload = () => {
+      const options = {
+        width: '100%',
+        height: `${dashboard.height}px`,
+        hideTabs: true,
+        hideToolbar: false,
+      };
+
+      const vizUrl = [
+        'https://public.tableau.com/views/',
+        dashboard.name,
+        '?:embed=y&:showVizHome=no&:display_count=no',
+      ].join('');
+
+      try {
+        vizRef.current = new window.tableau.Viz(
+          containerRef.current,
+          vizUrl,
+          options
+        );
+        setLoaded(true);
+      } catch (e) {
+        setLoaded(false);
+      }
+    };
+
+    document.body.appendChild(script);
+
+    return () => {
+      if (vizRef.current) {
+        try { vizRef.current.dispose(); } catch {}
+        vizRef.current = null;
+      }
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, [active, dashboard]);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        width: '100%',
+        height: active ? `${dashboard.height}px` : '0',
+        overflow: 'hidden',
+        transition: 'height 0.3s',
+      }}
+    />
+  );
+}
 
 export default function TableauExercises() {
   const [activeViz, setActiveViz] = useState(DASHBOARDS[0].id);
@@ -76,23 +142,16 @@ export default function TableauExercises() {
             {current.description}
           </p>
         </div>
-        <div style={{ position: 'relative', width: '100%' }}>
-          <iframe
-            src={current.vizUrl}
-            title={current.title}
-            style={{
-              width: '100%', height: `${current.height}px`, border: 'none',
-            }}
-            allowFullScreen
-          />
-        </div>
+        {DASHBOARDS.map(d => (
+          <TableauEmbed key={d.id} dashboard={d} active={activeViz === d.id} />
+        ))}
       </div>
 
       <div style={{
         padding: '1rem', borderRadius: '8px',
         border: '1px solid #ffeeba', background: '#fff3cd', fontSize: '0.85rem',
       }}>
-        ⚠️ Os dashboards acima são exemplos públicos do Tableau Public (não usam dados do Grupo Nova Era).
+        ⚠️ Os dashboards acima são exemplos públicos do Tableau Public em português (não usam dados do Grupo Nova Era).
         Use-os para treinar o olhar — explore os filtros, passe o mouse nos gráficos, tente entender como cada visual foi construído.
       </div>
 

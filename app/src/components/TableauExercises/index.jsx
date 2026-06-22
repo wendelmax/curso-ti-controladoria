@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const VIZ_API = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+const VIZ_API = 'https://public.tableau.com/javascripts/api/tableau-2.min.js';
 
 const DASHBOARDS = [
   {
@@ -8,7 +8,7 @@ const DASHBOARDS = [
     title: 'Dashboard de DRE Interativo',
     description: 'Demonstração do Resultado do Exercício — visualize receitas, despesas e resultado líquido.',
     hostUrl: 'https%3A%2F%2Fpublic.tableau.com%2F',
-    name: 'AndreCamalionte/AnliseFinanceira/Dashboard2',
+    name: 'AnliseFinanceira/Dashboard2',
     height: 600,
     guide: [
       'Qual mês apresentou o maior faturamento?',
@@ -22,7 +22,7 @@ const DASHBOARDS = [
     title: 'Análise de Resultados',
     description: 'Demonstração de Resultados interativa com indicadores financeiros e comparativos.',
     hostUrl: 'https%3A%2F%2Fpublic.tableau.com%2F',
-    name: 'ukiyoe/DemonstraodeResultados/Dashboard1',
+    name: 'DemonstraodeResultados/Dashboard1',
     height: 600,
     guide: [
       'Qual o resultado líquido acumulado no período?',
@@ -39,13 +39,9 @@ function TableauEmbed({ dashboard, active }) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (!active || !containerRef.current || vizRef.current) return;
+    if (!active || !containerRef.current) return;
 
-    const script = document.createElement('script');
-    script.src = VIZ_API;
-    script.async = true;
-
-    script.onload = () => {
+    const initViz = () => {
       const options = {
         width: '100%',
         height: `${dashboard.height}px`,
@@ -53,13 +49,12 @@ function TableauEmbed({ dashboard, active }) {
         hideToolbar: false,
       };
 
-      const vizUrl = [
-        'https://public.tableau.com/views/',
-        dashboard.name,
-        '?:embed=y&:showVizHome=no&:display_count=no',
-      ].join('');
+      const vizUrl = `https://public.tableau.com/views/${dashboard.name}?:embed=y&:showVizHome=no&:display_count=no`;
 
       try {
+        if (vizRef.current) {
+          vizRef.current.dispose();
+        }
         vizRef.current = new window.tableau.Viz(
           containerRef.current,
           vizUrl,
@@ -67,19 +62,35 @@ function TableauEmbed({ dashboard, active }) {
         );
         setLoaded(true);
       } catch (e) {
+        console.error("Erro ao inicializar Tableau viz:", e);
         setLoaded(false);
       }
     };
 
-    document.body.appendChild(script);
+    if (window.tableau) {
+      initViz();
+    } else {
+      let script = document.querySelector(`script[src="${VIZ_API}"]`);
+      if (!script) {
+        script = document.createElement('script');
+        script.src = VIZ_API;
+        script.async = true;
+        document.body.appendChild(script);
+      }
+      script.addEventListener('load', initViz);
+      return () => {
+        script.removeEventListener('load', initViz);
+        if (vizRef.current) {
+          try { vizRef.current.dispose(); } catch {}
+          vizRef.current = null;
+        }
+      };
+    }
 
     return () => {
       if (vizRef.current) {
         try { vizRef.current.dispose(); } catch {}
         vizRef.current = null;
-      }
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
       }
     };
   }, [active, dashboard]);

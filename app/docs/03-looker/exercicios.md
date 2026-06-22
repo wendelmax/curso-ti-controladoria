@@ -7,7 +7,7 @@ import LookMLEditor from '@site/src/components/LookMLEditor';
 :::tip Como usar esta página
 1. Leia cada pergunta conceitual e **tente responder antes de olhar a resposta**
 2. Depois, abra os desafios práticos no editor de LookML abaixo
-3. Estude o código e clique em "Validar LookML"
+3. Estude o código (agora com syntax highlighting!) e clique em "Validar LookML"
 4. Se errar, leia a explicação e tente de novo — é assim que se aprende!
 :::
 

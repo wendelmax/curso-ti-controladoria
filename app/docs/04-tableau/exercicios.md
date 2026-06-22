@@ -3,6 +3,13 @@
 > Parabéns por chegar até aqui! 🎉 Agora é hora de **colocar a mão na massa**. Os exercícios abaixo são divididos em dois grupos: os **conceituais** (para fixar a teoria) e os **práticos** (para aplicar no Tableau de verdade). Não pule nenhum — é fazendo que se aprende.
 
 import TableauExercises from '@site/src/components/TableauExercises';
+import TableauPlayground from '@site/src/components/TableauPlayground';
+
+## 🎨 Tableau Playground Interativo
+
+Monte visualizações usando os dados do Grupo Nova Era — selecione dimensões (azul/discreto) e medidas (verde/contínuo) como no Tableau, e veja o gráfico renderizar ao vivo.
+
+<TableauPlayground />
 
 ## Exercícios Práticos — Estudos de Caso com Dashboards Reais
 

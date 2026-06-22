@@ -4,12 +4,12 @@
 
 import TFjsPredictor from '@site/src/components/TFjsPredictor';
 
-## Prática: Previsão de Fluxo de Caixa com Machine Learning
+## 🧪 Laboratório de IA Interativo
 
-O componente abaixo treina um modelo de regressão linear no navegador usando TensorFlow.js — **sem instalar nada, sem escrever código**. Os dados são do faturamento mensal do Grupo Nova Era (janeiro a junho de 2026).
+O componente abaixo tem duas abas: **Previsão** (regressão linear com TF.js) e **Detecção de Anomalias** (Z-Score em despesas) — tudo no navegador, sem instalar nada.
 
 :::tip Brinque com o componente!
-Mude os valores, veja como o modelo se adapta. É literalmente arrastar controles e ver o resultado. Se você consegue usar um filtro no Excel, consegue usar isso.
+Na aba de previsão, treine o modelo e veja a reta de regressão. Na aba de anomalias, ajuste o limiar do Z-Score e veja quais despesas são detectadas como atípicas.
 :::
 
 <TFjsPredictor />

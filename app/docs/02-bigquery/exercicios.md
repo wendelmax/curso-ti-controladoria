@@ -1,6 +1,13 @@
 # 🧪 Laboratório de Prática — BigQuery
 
 import PraticarLab from '@site/src/components/PraticarLab'
+import BQPlayground from '@site/src/components/BQPlayground'
+
+## ☁️ Playground BigQuery
+
+Teste queries no estilo BigQuery em tempo real. As funções específicas do BigQuery (EXTRACT, DATE_TRUNC, SAFE_DIVIDE, IF, etc.) são traduzidas automaticamente para SQLite.
+
+<BQPlayground />
 
 <PraticarLab
   moduleId="modulo2"

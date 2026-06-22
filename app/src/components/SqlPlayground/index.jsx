@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import Editor from '@monaco-editor/react';
 import initSqlJs from 'sql.js';
+import { format } from 'sql-formatter';
 import SchemaExplorer, { SCHEMA } from '../SchemaExplorer';
 
 const DB_URL = '/db/seed.sqlite';
+const SAVED_QUERY_KEY = 'curso_sql_playground_query';
 
 function formatValue(val) {
   if (val === null || val === undefined) return 'NULL';
@@ -14,8 +16,24 @@ function formatValue(val) {
   return String(val);
 }
 
+function copyToClipboard(text) {
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(text);
+  }
+}
+
+function getSavedQuery() {
+  try { return localStorage.getItem(SAVED_QUERY_KEY) || ''; } catch { return ''; }
+}
+
+function saveQuery(sql) {
+  try { localStorage.setItem(SAVED_QUERY_KEY, sql); } catch {}
+}
+
 export default function SqlPlayground() {
   const editorRef = useRef(null);
+  const monacoRef = useRef(null);
+  const decorationsRef = useRef(null);
   const [db, setDb] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
@@ -23,6 +41,7 @@ export default function SqlPlayground() {
   const [error, setError] = useState(null);
   const [executing, setExecuting] = useState(false);
   const [executionTime, setExecutionTime] = useState(null);
+  const [query, setQuery] = useState(getSavedQuery);
 
   useEffect(() => {
     async function loadDatabase() {
@@ -43,23 +62,31 @@ export default function SqlPlayground() {
     }
     loadDatabase();
     return () => {
-      if (db) db.close();
+      // db is closed inside loadDatabase error handler when needed
     };
   }, []);
 
-  const handleEditorDidMount = useCallback((editor) => {
+  const handleEditorDidMount = useCallback((editor, monaco) => {
     editorRef.current = editor;
+    monacoRef.current = monaco;
     editor.focus();
 
     editor.addAction({
       id: 'execute-query',
       label: 'Executar Query',
-      keybindings: [2048 | 49],
+      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
       run: () => executeQuery(),
     });
-  }, [db]);
+  }, []);
+
+  const clearDecorations = () => {
+    if (editorRef.current && decorationsRef.current) {
+      decorationsRef.current = editorRef.current.deltaDecorations(decorationsRef.current, []);
+    }
+  };
 
   const executeQuery = useCallback(() => {
+    clearDecorations();
     if (!db || !editorRef.current) return;
     const sql = editorRef.current.getValue().trim();
     if (!sql) return;
@@ -76,7 +103,28 @@ export default function SqlPlayground() {
       setExecutionTime(((end - start) / 1000).toFixed(3));
       setResults(res);
     } catch (e) {
-      setError(e.message);
+      const msg = e.message;
+      setError(msg);
+      const lineMatch = msg.match(/line (\d+):/i) || msg.match(/at line (\d+)/i) || msg.match(/(\d+):/);
+      if (lineMatch && editorRef.current && monacoRef.current) {
+        const line = parseInt(lineMatch[1]);
+        const monaco = monacoRef.current;
+        decorationsRef.current = editorRef.current.deltaDecorations([], [
+          {
+            range: new monaco.Range(line, 1, line, 1),
+            options: {
+              isWholeLine: true,
+              overviewRuler: { color: '#e74c3c', position: monaco.editor.OverviewRulerLane.Full },
+            },
+          },
+          {
+            range: new monaco.Range(line, 1, line, 1000),
+            options: {
+              inlineClassName: 'error-line-highlight',
+            },
+          },
+        ]);
+      }
     } finally {
       setExecuting(false);
     }
@@ -105,6 +153,25 @@ export default function SqlPlayground() {
     URL.revokeObjectURL(url);
   }, [results]);
 
+  const formatQuery = useCallback(() => {
+    if (!editorRef.current) return;
+    try {
+      const formatted = format(editorRef.current.getValue(), {
+        language: 'sqlite',
+        uppercase: true,
+        tabWidth: 2,
+      });
+      editorRef.current.setValue(formatted);
+    } catch {
+      // keep original if formatting fails
+    }
+  }, []);
+
+  const handleQueryChange = useCallback((value) => {
+    setQuery(value);
+    saveQuery(value);
+  }, []);
+
   const handleKeyDown = useCallback((e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       executeQuery();
@@ -115,6 +182,7 @@ export default function SqlPlayground() {
     setResults(null);
     setError(null);
     setExecutionTime(null);
+    clearDecorations();
   };
 
   const getTableNames = () => SCHEMA.map((t) => t.name);
@@ -273,17 +341,28 @@ export default function SqlPlayground() {
           <div className="playground-editor-panel">
             <div className="playground-editor-header">
               <span>&#128221; Editor SQL</span>
-              {executionTime && (
-                <span style={{ fontWeight: 400, fontSize: '0.8rem' }}>
-                  {executionTime}s
-                </span>
-              )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                {executionTime && (
+                  <span style={{ fontWeight: 400, fontSize: '0.8rem' }}>
+                    {executionTime}s
+                  </span>
+                )}
+                <button onClick={formatQuery} title="Formatar SQL"
+                  style={{
+                    padding: '0.15rem 0.5rem', border: '1px solid var(--ifm-color-emphasis-300)',
+                    borderRadius: '4px', background: 'transparent', cursor: 'pointer',
+                    fontSize: '0.75rem', color: 'var(--ifm-color-emphasis-700)',
+                  }}>
+                  ✨ Formatar
+                </button>
+              </div>
             </div>
             <div className="playground-editor-wrapper">
               <Editor
                 height="100%"
                 defaultLanguage="sql"
-                defaultValue={`-- Digite sua query aqui\nSELECT * FROM empresas LIMIT 10;`}
+                value={query}
+                onChange={handleQueryChange}
                 theme="cursoTheme"
                 beforeMount={handleEditorWillMount}
                 onMount={handleEditorDidMount}
@@ -339,7 +418,11 @@ export default function SqlPlayground() {
                     {results[0].values.map((row, i) => (
                       <tr key={i}>
                         {row.map((val, j) => (
-                          <td key={j}>{formatValue(val)}</td>
+                          <td key={j} onClick={() => copyToClipboard(String(val))}
+                            title="Clique para copiar"
+                            style={{ cursor: 'pointer' }}>
+                            {formatValue(val)}
+                          </td>
                         ))}
                       </tr>
                     ))}

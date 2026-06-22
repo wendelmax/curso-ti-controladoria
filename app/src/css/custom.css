@@ -126,6 +126,11 @@
   top: 0;
 }
 
+.error-line-highlight {
+  background: rgba(231, 76, 60, 0.15) !important;
+  border-bottom: 2px wavy #e74c3c;
+}
+
 .playground-error {
   color: var(--ifm-color-danger);
   padding: 0.75rem;

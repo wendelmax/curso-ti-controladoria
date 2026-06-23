@@ -35,7 +35,7 @@ function translateBQtoSQLite(sql) {
 
   s = s.replace(/SAFE_DIVIDE\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "CASE WHEN ($2) = 0 THEN NULL ELSE ($1) / ($2) END");
   s = s.replace(/DIV\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "CAST(($1) / NULLIF($2, 0) AS INTEGER)");
-  s = s.replace(/IF\s*\(\s*(.+?)\s*,\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "CASE WHEN ($1) THEN $2 ELSE $3 END");
+  s = s.replace(/\bIF\s*\(\s*(.+?)\s*,\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "CASE WHEN ($1) THEN $2 ELSE $3 END");
 
   s = s.replace(/STARTS_WITH\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "($1) LIKE ($2) || '%'");
   s = s.replace(/ENDS_WITH\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "($1) LIKE '%' || ($2)");
@@ -81,22 +81,22 @@ function estimateBytes(sql) {
 }
 
 const SAMPLES_BQ = [
-  { label: 'EXTRACT — Ano e mês das notas fiscais', sql: "SELECT data_emissao, EXTRACT(YEAR FROM data_emissao) AS ano, EXTRACT(MONTH FROM data_emissao) AS mes FROM notas_fiscais WHERE tipo = 'Saída' LIMIT 10" },
-  { label: 'DATE_TRUNC — Agrupar faturamento por mês', sql: "SELECT DATE_TRUNC(data, MONTH) AS mes, SUM(valor) AS total FROM faturamento GROUP BY mes ORDER BY mes" },
-  { label: 'IF — Categorizar fornecedores por valor', sql: "SELECT nome, SUM(valor) AS total, IF(SUM(valor) > 10000, 'Alto', 'Normal') AS categoria FROM contas_pagar GROUP BY nome ORDER BY total DESC" },
+  { label: 'EXTRACT — Ano e mês das notas fiscais', sql: "SELECT data_emissao, EXTRACT(YEAR FROM data_emissao) AS ano, EXTRACT(MONTH FROM data_emissao) AS mes FROM notas_fiscais WHERE tipo = 'saida' LIMIT 10" },
+  { label: 'DATE_TRUNC — Agrupar faturamento por mês', sql: "SELECT DATE_TRUNC(data_emissao, MONTH) AS mes, SUM(valor_liquido) AS total FROM faturamento GROUP BY mes ORDER BY mes" },
+  { label: 'IF — Categorizar contas a pagar por valor', sql: "SELECT f.nome, SUM(cp.valor) AS total, IF(SUM(cp.valor) > 10000, 'Alto', 'Normal') AS categoria FROM contas_pagar cp JOIN fornecedores f ON cp.id_fornecedor = f.id_fornecedor GROUP BY f.nome ORDER BY total DESC" },
   { label: 'SAFE_DIVIDE — Margem de lucro sem erro', sql: "SELECT nome, SAFE_DIVIDE(SUM(lucro), SUM(receita)) * 100 AS margem_percentual FROM (SELECT 'Produto A' AS nome, 5000.0 AS receita, 2000.0 AS lucro UNION ALL SELECT 'Produto B', 3000.0, 0.0) GROUP BY nome" },
-  { label: 'STARTS_WITH — Contas que começam com "Forne"', sql: "SELECT nome, valor FROM contas_pagar WHERE STARTS_WITH(nome, 'Forne') LIMIT 10" },
-  { label: 'DATE_ADD — Projetar vencimento +30 dias', sql: "SELECT id, vencimento, DATE_ADD(vencimento, INTERVAL 30 DAY) AS novo_vencimento FROM contas_pagar LIMIT 10" },
-  { label: 'Funções Analíticas — ROW_NUMBER', sql: "SELECT c.nome, SUM(COALESCE(nf.valor_total, 0)) AS total_gasto, ROW_NUMBER() OVER (ORDER BY SUM(COALESCE(nf.valor_total, 0)) DESC) AS ranking FROM clientes c LEFT JOIN notas_fiscais nf ON c.id = nf.cliente_id AND nf.tipo = 'Saída' GROUP BY c.nome ORDER BY ranking LIMIT 10" },
-  { label: 'LAG — Comparar faturamento mês anterior', sql: "SELECT STRFTIME('%Y-%m', data) AS mes, SUM(valor) AS faturamento, LAG(SUM(valor)) OVER (ORDER BY STRFTIME('%Y-%m', data)) AS mes_anterior, SUM(valor) - LAG(SUM(valor)) OVER (ORDER BY STRFTIME('%Y-%m', data)) AS variacao FROM faturamento GROUP BY mes ORDER BY mes" },
+  { label: 'STARTS_WITH — Fornecedores que começam com "Aço"', sql: "SELECT nome FROM fornecedores WHERE STARTS_WITH(nome, 'Aço') LIMIT 10" },
+  { label: 'DATE_ADD — Projetar vencimento +30 dias', sql: "SELECT id_conta_pagar, data_vencimento, DATE_ADD(data_vencimento, INTERVAL 30 DAY) AS novo_vencimento FROM contas_pagar LIMIT 10" },
+  { label: 'Funções Analíticas — ROW_NUMBER', sql: "SELECT c.nome, SUM(COALESCE(nf.base_calculo, 0)) AS total_gasto, ROW_NUMBER() OVER (ORDER BY SUM(COALESCE(nf.base_calculo, 0)) DESC) AS ranking FROM clientes c LEFT JOIN notas_fiscais nf ON c.id_cliente = nf.id_cliente_fornecedor AND nf.tipo = 'saida' GROUP BY c.nome ORDER BY ranking LIMIT 10" },
+  { label: 'LAG — Comparar faturamento mês anterior', sql: "SELECT STRFTIME('%Y-%m', data_emissao) AS mes, SUM(valor_liquido) AS faturamento, LAG(SUM(valor_liquido)) OVER (ORDER BY STRFTIME('%Y-%m', data_emissao)) AS mes_anterior, SUM(valor_liquido) - LAG(SUM(valor_liquido)) OVER (ORDER BY STRFTIME('%Y-%m', data_emissao)) AS variacao FROM faturamento GROUP BY mes ORDER BY mes" },
 ];
 
 const SAMPLES_STANDARD = [
   { label: 'SELECT básico', sql: "SELECT * FROM empresas LIMIT 5;" },
-  { label: 'Faturamento por empresa', sql: "SELECT e.nome AS empresa, SUM(f.valor) AS total FROM faturamento f JOIN empresas e ON f.empresa_id = e.id GROUP BY e.nome ORDER BY total DESC;" },
-  { label: 'Contas a pagar vencidas', sql: "SELECT nome, valor, vencimento FROM contas_pagar WHERE vencimento < DATE('now') ORDER BY vencimento;" },
-  { label: 'CTE — Top 5 fornecedores', sql: "WITH top_fornecedores AS (SELECT f.nome, SUM(cp.valor) AS total FROM fornecedores f JOIN contas_pagar cp ON f.id = cp.fornecedor_id GROUP BY f.nome ORDER BY total DESC LIMIT 5) SELECT * FROM top_fornecedores;" },
-  { label: 'Window Function — Ranking', sql: "SELECT nome, valor, RANK() OVER (ORDER BY valor DESC) AS ranking FROM contas_pagar LIMIT 10;" },
+  { label: 'Faturamento por empresa', sql: "SELECT e.nome_fantasia AS empresa, SUM(f.valor_liquido) AS total FROM faturamento f JOIN empresas e ON f.id_empresa = e.id_empresa GROUP BY e.nome_fantasia ORDER BY total DESC;" },
+  { label: 'Contas a pagar vencidas', sql: "SELECT f.nome AS fornecedor, cp.valor, cp.data_vencimento FROM contas_pagar cp JOIN fornecedores f ON cp.id_fornecedor = f.id_fornecedor WHERE cp.data_vencimento < DATE('now') ORDER BY cp.data_vencimento;" },
+  { label: 'CTE — Top 5 fornecedores', sql: "WITH top_fornecedores AS (SELECT f.nome, SUM(cp.valor) AS total FROM fornecedores f JOIN contas_pagar cp ON f.id_fornecedor = cp.id_fornecedor GROUP BY f.nome ORDER BY total DESC LIMIT 5) SELECT * FROM top_fornecedores;" },
+  { label: 'Window Function — Ranking', sql: "SELECT id_conta_pagar, valor, RANK() OVER (ORDER BY valor DESC) AS ranking FROM contas_pagar LIMIT 10;" },
 ];
 
 function formatValue(val) {

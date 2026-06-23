@@ -20,9 +20,9 @@ function translateBQtoSQLite(sql) {
   s = s.replace(/DATE_ADD\s*\(\s*(\w+(?:\.\w+)?)\s*,\s*INTERVAL\s+(\d+)\s+MONTH\s*\)/gi, "DATE($1, '+$2 months')");
   s = s.replace(/DATE_SUB\s*\(\s*(\w+(?:\.\w+)?)\s*,\s*INTERVAL\s+(\d+)\s+DAY\s*\)/gi, "DATE($1, '-$2 days')");
   s = s.replace(/DATE_SUB\s*\(\s*(\w+(?:\.\w+)?)\s*,\s*INTERVAL\s+(\d+)\s+MONTH\s*\)/gi, "DATE($1, '-$2 months')");
-  s = s.replace(/CAST\\s*\\(\\s*(\\w+(?:\\.\\w+)?)\\s+AS\\s+STRING\\s*\\)/gi, "CAST($1 AS TEXT)");
-  s = s.replace(/CAST\\s*\\(\\s*(\\w+(?:\\.\\w+)?)\\s+AS\\s+INT64\\s*\\)/gi, "CAST($1 AS INTEGER)");
-  s = s.replace(/CAST\\s*\\(\\s*(\\w+(?:\\.\\w+)?)\\s+AS\\s+FLOAT64\\s*\\)/gi, "CAST($1 AS REAL)");
+  s = s.replace(/CAST\s*\(\s*(\w+(?:\.\w+)?)\s+AS\s+STRING\s*\)/gi, "CAST($1 AS TEXT)");
+  s = s.replace(/CAST\s*\(\s*(\w+(?:\.\w+)?)\s+AS\s+INT64\s*\)/gi, "CAST($1 AS INTEGER)");
+  s = s.replace(/CAST\s*\(\s*(\w+(?:\.\w+)?)\s+AS\s+FLOAT64\s*\)/gi, "CAST($1 AS REAL)");
   return s;
 }
 

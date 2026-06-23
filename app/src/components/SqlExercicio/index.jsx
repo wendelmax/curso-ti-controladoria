@@ -15,7 +15,7 @@ async function getDatabase(SQL) {
 
 const ERROR_TRANSLATIONS = [
   [/near "([^"]+)": syntax error/i, (_, token) => `Erro de sintaxe perto de "${token}". Verifique a digitação — você quis digitar "${suggestCorrection(token)}"?`],
-  [/no such table: (\w+)/i, (_, tbl) => `Tabela "${tbl}" não encontrada. As tabelas disponíveis são: lancamentos, contas, clientes, fornecedores, centros_custo, plano_contas.`],
+  [/no such table: (\w+)/i, (_, tbl) => `Tabela "${tbl}" não encontrada. As tabelas disponíveis são: lancamentos_contabeis, contas_pagar, contas_receber, clientes, fornecedores, centros_custo, planos_contas, faturamento, notas_fiscais, empresas.`],
   [/no such column: (\w+)/i, (_, col) => `Coluna "${col}" não encontrada. Verifique os nomes das colunas na tabela que você está consultando.`],
   [/unrecognized token/i, () => 'Caractere não reconhecido. Verifique aspas, vírgulas e parênteses.' ],
   [/ORDER BY clause should come after/i, () => 'A cláusula ORDER BY deve vir depois do GROUP BY, não antes.' ],

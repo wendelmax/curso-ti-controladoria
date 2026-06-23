@@ -82,6 +82,30 @@ function translateSqlError(msg) {
   return `Erro SQL: ${msg}`;
 }
 
+function translateBQtoSQLite(sql) {
+  let s = sql;
+  s = s.replace(/EXTRACT\s*\(\s*YEAR\s+FROM\s+(\w+(?:\.\w+)?)\s*\)/gi, "CAST(STRFTIME('%Y', $1) AS INTEGER)");
+  s = s.replace(/EXTRACT\s*\(\s*MONTH\s+FROM\s+(\w+(?:\.\w+)?)\s*\)/gi, "CAST(STRFTIME('%m', $1) AS INTEGER)");
+  s = s.replace(/EXTRACT\s*\(\s*DAY\s+FROM\s+(\w+(?:\.\w+)?)\s*\)/gi, "CAST(STRFTIME('%d', $1) AS INTEGER)");
+  s = s.replace(/DATE_TRUNC\s*\(\s*(\w+(?:\.\w+)?)\s*,\s*MONTH\s*\)/gi, "STRFTIME('%Y-%m-01', $1)");
+  s = s.replace(/DATE_TRUNC\s*\(\s*(\w+(?:\.\w+)?)\s*,\s*YEAR\s*\)/gi, "STRFTIME('%Y-01-01', $1)");
+  s = s.replace(/FORMAT_DATE\s*\(\s*'([^']+)'\s*,\s*(\w+(?:\.\w+)?)\s*\)/gi, "STRFTIME('$1', $2)");
+  s = s.replace(/SAFE_DIVIDE\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "CASE WHEN ($2) = 0 THEN NULL ELSE ($1) / ($2) END");
+  s = s.replace(/DIV\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "CAST(($1) / NULLIF($2, 0) AS INTEGER)");
+  s = s.replace(/IF\s*\(\s*(.+?)\s*,\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "CASE WHEN ($1) THEN $2 ELSE $3 END");
+  s = s.replace(/STARTS_WITH\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "($1) LIKE ($2) || '%'");
+  s = s.replace(/ENDS_WITH\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "($1) LIKE '%' || ($2)");
+  s = s.replace(/CONTAINS_SUBSTR\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "($1) LIKE '%' || ($2) || '%'");
+  s = s.replace(/DATE_ADD\s*\(\s*(\w+(?:\.\w+)?)\s*,\s*INTERVAL\s+(\d+)\s+DAY\s*\)/gi, "DATE($1, '+$2 days')");
+  s = s.replace(/DATE_ADD\s*\(\s*(\w+(?:\.\w+)?)\s*,\s*INTERVAL\s+(\d+)\s+MONTH\s*\)/gi, "DATE($1, '+$2 months')");
+  s = s.replace(/DATE_SUB\s*\(\s*(\w+(?:\.\w+)?)\s*,\s*INTERVAL\s+(\d+)\s+DAY\s*\)/gi, "DATE($1, '-$2 days')");
+  s = s.replace(/DATE_SUB\s*\(\s*(\w+(?:\.\w+)?)\s*,\s*INTERVAL\s+(\d+)\s+MONTH\s*\)/gi, "DATE($1, '-$2 months')");
+  s = s.replace(/CAST\s*\(\s*(\w+(?:\.\w+)?)\s+AS\s+STRING\s*\)/gi, "CAST($1 AS TEXT)");
+  s = s.replace(/CAST\s*\(\s*(\w+(?:\.\w+)?)\s+AS\s+INT64\s*\)/gi, "CAST($1 AS INTEGER)");
+  s = s.replace(/CAST\s*\(\s*(\w+(?:\.\w+)?)\s+AS\s+FLOAT64\s*\)/gi, "CAST($1 AS REAL)");
+  return s;
+}
+
 function normalizeSql(sql) {
   return sql.replace(/;+$/, '').trim().replace(/\s+/g, ' ').toLowerCase();
 }
@@ -200,8 +224,10 @@ export default function SqlExercicio({
 
     try {
       const { db } = sqlJsRef.current;
-      const studentRaw = db.exec(sql);
-      const expectedRaw = db.exec(expectedSql);
+      const translatedStudent = translateBQtoSQLite(sql);
+      const translatedExpected = translateBQtoSQLite(expectedSql);
+      const studentRaw = db.exec(translatedStudent);
+      const expectedRaw = db.exec(translatedExpected);
       let isCorrect = false;
 
       if (validation === 'exact') {

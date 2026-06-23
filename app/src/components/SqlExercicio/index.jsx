@@ -92,7 +92,7 @@ function translateBQtoSQLite(sql) {
   s = s.replace(/FORMAT_DATE\s*\(\s*'([^']+)'\s*,\s*(\w+(?:\.\w+)?)\s*\)/gi, "STRFTIME('$1', $2)");
   s = s.replace(/SAFE_DIVIDE\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "CASE WHEN ($2) = 0 THEN NULL ELSE ($1) / ($2) END");
   s = s.replace(/DIV\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "CAST(($1) / NULLIF($2, 0) AS INTEGER)");
-  s = s.replace(/IF\s*\(\s*(.+?)\s*,\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "CASE WHEN ($1) THEN $2 ELSE $3 END");
+  s = s.replace(/\bIF\s*\(\s*(.+?)\s*,\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "CASE WHEN ($1) THEN $2 ELSE $3 END");
   s = s.replace(/STARTS_WITH\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "($1) LIKE ($2) || '%'");
   s = s.replace(/ENDS_WITH\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "($1) LIKE '%' || ($2)");
   s = s.replace(/CONTAINS_SUBSTR\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)/gi, "($1) LIKE '%' || ($2) || '%'");
